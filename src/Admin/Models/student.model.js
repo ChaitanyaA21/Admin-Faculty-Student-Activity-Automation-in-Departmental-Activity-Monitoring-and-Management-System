@@ -78,4 +78,4 @@ const studentSchema=mongoose.Schema({
 
 );
 const student=mongoose.model("student",studentSchema);
-module.exports = student;
+module.exports = student
