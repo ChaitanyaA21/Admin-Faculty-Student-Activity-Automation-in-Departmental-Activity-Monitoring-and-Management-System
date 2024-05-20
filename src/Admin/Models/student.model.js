@@ -6,7 +6,12 @@ const studentSchema=mongoose.Schema({
             uppercase:true
             //add upper case
         },
-        name:{
+        firstname:{
+            type:String,
+            required:true,
+            
+        },
+        lastname:{
             type:String,
             required:true,
             
@@ -69,6 +74,11 @@ const studentSchema=mongoose.Schema({
             type:Number,
             required:true,
             default:1
+        },
+        reRegistered:{
+            type:Boolean,
+            required:true,
+            default:false
         }
 
         
