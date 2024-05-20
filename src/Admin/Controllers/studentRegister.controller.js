@@ -1,11 +1,49 @@
 const {studentModel} = require('../Models/student.model.js')
 const ApiResponse =require('../Utils/ApiResponse.utils.js')
-const ApiError =require('../Utils/ApiError.utils.js')
+const {ApiError} =require('../Utils/ApiError.utils.js')
 
 const sortingData=require('../Utils/DataSorting.utils.js')
 
 const fs = require('fs')
 const XLSX = require('xlsx')
+//Sorting logic
+function compare( a, b) {
+    if(a.Names > b.Names) {
+        return 1
+    }
+    else if (a.Names < b.Names) {
+        return -1
+    }
+    return 0
+}
+//RollNo Generating function
+function rollnoGenerator(studentData){
+   try {
+    let year = new Date().getFullYear().toString();
+    let rollNo =`${year[year.length-2]}${year[year.length-1]}031`;
+    let data= JSON.parse(fs.readFileSync('./src/Admin/Controllers/data.json', 'utf8'))[studentData[0].branch.toUpperCase()]
+    if(!studentData[0].specialization){
+        
+        rollNo=rollNo+data;
+    }
+    else if(studentData[0].specialization){
+        rollNo=rollNo+data[studentData[0].specialization]
+    }
+    
+    
+    for (let i = 1; i <= studentData.length; i++) {
+        let fourDigitNumber = i.toString().padStart(4, '0');
+        let t=rollNo
+        t=t+fourDigitNumber;
+        console.log(t);
+
+        studentData[i-1]["rollNo"]=t;
+
+    }
+   } catch (error) {
+    throw new ApiError(500,`Problem in Generating roll number ${error}`)
+   }
+}
 
 //Student registration
 const registerStudent= async (req,res)=>{
@@ -26,22 +64,30 @@ for(const sheetName of workbook.SheetNames) {
 
 //Validation-no empty fields for required fields(if found send back an error of correction request)
 worksheets.Sheet1.forEach(object => {
-    object.forEach(field => {
-        if(field.trim()===""){
-            return new ApiError(400,`${object.firstname} has some missing details`)
-        }
-    });
+    for (const key in object) {
+            if (object[key].toString().trim() === "") {
+                throw new ApiError(400, `${object["firstname"]} has some missing details`);
+            }
+    }
 });
 
 //Sort them according to surname(Separate name into first name and last name so that sorting on surnames can be done)
-let data= await sortingData(worksheets)
+
+let data= await worksheets.Sheet1.sort( compare )
+data.forEach(element => {
+    console.log(element.firstname)
+})//have to test this sorting 
 //Generate roll no's
-let rollnumbers = await rollnoGenerator(new Date().getFullYear,data[0].branch,data[0].specialization,data.length)
+rollnoGenerator(data)
+console.log("After RollNo Generator");
+data.forEach(object=>{
+    console.log(object);
+})
 
 //create and save the student login details as a whole
-for (let index = 0; index < array.length; index++) {
-    studentModel.create({
-        rollNo:rollnumbers[index],
+for (let index = 0; index < data.length; index++) {
+    await studentModel.create({
+        rollNo:data[index].rollNo,
         firstname:data[index].firstname,
         lastname:data[index].lastname,
         email:data[index].email,
@@ -60,6 +106,9 @@ for (let index = 0; index < array.length; index++) {
         specialization:data[index].specialization,
         semNumber:data[index].semNumber
     }) 
+    return res.status(201).json(
+        new ApiResponse(200, true, "User registered Successfully")
+    )
 }
 
 }
@@ -113,4 +162,5 @@ else{
 }
 
 }
+
 module.exports =registerStudent

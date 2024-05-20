@@ -68,16 +68,13 @@ const studentSchema=mongoose.Schema({
         },
         specialization:{
             type:String,
-            required:true
         },
         semNumber:{
             type:Number,
-            required:true,
             default:1
         },
         reRegistered:{
             type:Boolean,
-            required:true,
             default:false
         }
 

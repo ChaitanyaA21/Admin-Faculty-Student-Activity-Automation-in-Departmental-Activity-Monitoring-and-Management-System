@@ -35,6 +35,7 @@ const start = async () => {
     try {
       await connectDB(process.env.MONGO_URI);
         // new subjectObj({subjectId:"SubjectId",subjectName:"subjectName"}).save();
+        console.log("Connected to Database")
 
       app.listen(PORT, () =>
         console.log(`Server is listening on port ${PORT}...`)
