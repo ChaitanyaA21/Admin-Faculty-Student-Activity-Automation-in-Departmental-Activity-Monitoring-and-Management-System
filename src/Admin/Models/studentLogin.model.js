@@ -3,9 +3,8 @@ const bcrypt = require('bcrypt')
 const jwt=require('jsonwebtoken')
 
 const studentLoginSchema=mongoose.Schema({
-    username:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"student",
+    rollNo:{
+        type:String,
         required:true
     },
     password:{
@@ -29,27 +28,27 @@ studentLoginSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password,this.password)
 }
 studentLoginSchema.methods.generateAccessToken =function () { 
-    jwt.sign(
+    return jwt.sign(
         {
             _id:this._id,
-            username:this.username
+            rollno:this.rollno
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
-            expiresIn:ACCESS_TOKEN_EXPIRY
+            expiresIn:process.env.ACCESS_TOKEN_EXPIRY
         }
     )
  }
 studentLoginSchema.methods.generateRefreshToken =function () {  
-    jwt.sign(
+    return jwt.sign(
         {
             _id:this._id,
         },
         process.env.REFRESH_TOKEN_SECRET,
         {
-            expiresIn:REFRESH_TOKEN_EXPIRY
+            expiresIn:process.env.REFRESH_TOKEN_EXPIRY
         }
     )
 }
 const studentLogin=mongoose.model("studentLogin",studentLoginSchema);
-module.exports = studentLogin;
+module.exports = {studentLogin};

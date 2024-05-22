@@ -1,8 +1,7 @@
 const {studentModel} = require('../Models/student.model.js')
 const ApiResponse =require('../Utils/ApiResponse.utils.js')
 const {ApiError} =require('../Utils/ApiError.utils.js')
-
-const sortingData=require('../Utils/DataSorting.utils.js')
+const { studentLogin } = require("../Models/studentLogin.model.js")
 
 const fs = require('fs')
 const XLSX = require('xlsx')
@@ -85,8 +84,9 @@ data.forEach(object=>{
 })
 
 //create and save the student login details as a whole
+const studentpassword = process.env.STUDENT_PASSWORD
 for (let index = 0; index < data.length; index++) {
-    await studentModel.create({
+   const student= await studentModel.create({
         rollNo:data[index].rollNo,
         firstname:data[index].firstname,
         lastname:data[index].lastname,
@@ -105,13 +105,17 @@ for (let index = 0; index < data.length; index++) {
         branch:data[index].branch,
         specialization:data[index].specialization,
         semNumber:data[index].semNumber
-    }) 
-    return res.status(201).json(
-        new ApiResponse(200, true, "User registered Successfully")
-    )
+    })
+         await studentLogin.create({
+          rollNo: student.rollNo,
+          password:studentpassword
+        });
 }
+   
 
-}
+return res.status(201).json(
+    new ApiResponse(200, true, "User registered Successfully")
+)}
 else{
     
 //take details from frontend for adding single student 
