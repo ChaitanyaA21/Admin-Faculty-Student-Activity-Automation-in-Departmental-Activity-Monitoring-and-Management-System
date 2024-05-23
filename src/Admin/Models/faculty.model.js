@@ -38,9 +38,9 @@ const facultySchema=mongoose.Schema({
         required:true
        },
 
-        
+       
 },
 {timestamps:true}
 );
 const faculty=mongoose.model("faculty",facultySchema);
-module.exports = faculty;
+module.exports = {faculty};

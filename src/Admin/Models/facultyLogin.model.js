@@ -1,11 +1,12 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt')
-const jwt=require('jsonwebtoken')
+const jwt=require('jsonwebtoken');
+const { faculty } = require('./faculty.model');
 
 const facultyLoginSchema=mongoose.Schema({
-    username:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"faculty",
+    facultyId:{
+        type:string,
+        // ref:"faculty",
         required:true
     },
     password:{
@@ -29,7 +30,7 @@ facultyLoginSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password,this.password)
 }
 facultyLoginSchema.methods.generateAccessToken =function () { 
-    jwt.sign(
+   return jwt.sign(
         {
             _id:this._id,
             username:this.username
@@ -41,7 +42,7 @@ facultyLoginSchema.methods.generateAccessToken =function () {
     )
  }
 facultyLoginSchema.methods.generateRefreshToken =function () {  
-    jwt.sign(
+    return jwt.sign(
         {
             _id:this._id,
         },
@@ -52,4 +53,4 @@ facultyLoginSchema.methods.generateRefreshToken =function () {
     )
 }
 const facultyLogin=mongoose.model("facultyLogin",facultyLoginSchema);
-module.exports = facultyLogin;
+module.exports = {facultyLogin};

@@ -1,5 +1,5 @@
 const {studentModel} = require('../Models/student.model.js')
-const ApiResponse =require('../Utils/ApiResponse.utils.js')
+const {ApiResponse} =require('../Utils/ApiResponse.utils.js')
 const {ApiError} =require('../Utils/ApiError.utils.js')
 const { studentLogin } = require("../Models/studentLogin.model.js")
 

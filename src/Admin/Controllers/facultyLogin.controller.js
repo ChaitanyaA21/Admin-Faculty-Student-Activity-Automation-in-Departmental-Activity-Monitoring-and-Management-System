@@ -1,19 +1,19 @@
 const { asyncHandler } = require("../Utils/asyncHandler.utils.js")
 const { ApiError } = require("../Utils/ApiError.utils.js")
 const { ApiResponse } = require("../Utils/ApiResponse.utils.js")
-const { studentLogin } = require("../Models/studentLogin.model.js")
+const { facultyLogin } = require("../Models/facultyLogin.model.js")
 const jwt = require("jsonwebtoken")
 const mongoose=require('mongoose')
 
-const generateAccessAndRefreshTokens = async (studentID) => {
+const generateAccessAndRefreshTokens = async (facultyId) => {
     try {
-        const student = await studentLogin.findById(studentID)
+        const faculty = await facultyLogin.findById(facultyId)
         
-        const accessToken = student.generateAccessToken()
-        const refreshToken = student.generateRefreshToken()
+        const accessToken = faculty.generateAccessToken()
+        const refreshToken = faculty.generateRefreshToken()
 
-        student.refreshToken = refreshToken
-        await student.save({ validateBeforeSave: false })
+        faculty.refreshToken = refreshToken
+        await faculty.save({ validateBeforeSave: false })
 
         return {accessToken, refreshToken}
 
@@ -22,28 +22,25 @@ const generateAccessAndRefreshTokens = async (studentID) => {
     }
 }
 
-const loginStudent = asyncHandler(async (req, res) => {
+const loginFaculty = asyncHandler(async (req, res) => {
     // TO DOS
     // req body -> data
 
-    const {rollNo, password} = req.body
+    const {facultyId, password} = req.body
 
     if(!rollNo) {
-        throw new ApiError(400, "rollno is required")
+        throw new ApiError(400, "facultyId is required")
     }
 
     // find the user
-    // const {ObjectId}  = mongoose.Types;
+    const faculty = await studentLogin.findOne({facultyId:facultyId})
 
-    // const rollnoObjectId = new ObjectId(rollNo)
-    const student = await studentLogin.findOne({rollNo:rollNo})
-
-    if(!student) {
-        throw new ApiError(404, "Student does not exist with this roll no")
+    if(!faculty) {
+        throw new ApiError(404, "faculty does not exist with this facultyId")
     }
 
     // password check
-    const isPasswordValid = await student.isPasswordCorrect(password)
+    const isPasswordValid = await faculty.isPasswordCorrect(password)
 
     if(!isPasswordValid) {
         throw new ApiError(401, "Invalid user Credentials")
@@ -51,10 +48,10 @@ const loginStudent = asyncHandler(async (req, res) => {
 
     // access and refresh token
 
-    const {accessToken, refreshToken} = await generateAccessAndRefreshTokens(student._id)
+    const {accessToken, refreshToken} = await generateAccessAndRefreshTokens(faculty._id)
     
 
-    const loggedInStudent = await studentLogin.findById(student._id).select("-password -refreshToken")
+    const loggedInFaculty = await facultyLogin.findById(faculty._id).select("-password -refreshToken")
 
     const options = {
         httpOnly: true,
@@ -71,15 +68,15 @@ const loginStudent = asyncHandler(async (req, res) => {
         new ApiResponse(
             200, 
             {
-                user: loggedInStudent, accessToken, refreshToken
+                user: loggedInFaculty, accessToken, refreshToken
             },
             "User logged in succesfully"
         )
     )
 })
 
-const logoutStudent = asyncHandler( async (req, res) => {
-    await studentLogin.findByIdAndUpdate(
+const logoutFaculty = asyncHandler( async (req, res) => {
+    await facultyLogin.findByIdAndUpdate(
         req.user._id,
         {
             $set: {
@@ -105,7 +102,7 @@ const logoutStudent = asyncHandler( async (req, res) => {
     )
 })
 
-const refresAccessToken = asyncHandler( async (req, res) => {
+const refreshAccessToken = asyncHandler( async (req, res) => {
     try {
         const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
     
@@ -118,13 +115,13 @@ const refresAccessToken = asyncHandler( async (req, res) => {
             process.env.REFRESH_TOKEN_SECRET
         )
     
-        const student = await studentLogin.findById(decodedToken?._id)
+        const faculty = await facultyLogin.findById(decodedToken?._id)
     
-        if(!student) {
+        if(!faculty) {
             throw new ApiError(401, "Invalid refresh token")
         }
     
-        if(incomingRefreshToken !== student?.refreshToken) {
+        if(incomingRefreshToken !== faculty?.refreshToken) {
             throw new ApiError(401, "Refresh token is expired or used")
         }
     
@@ -133,7 +130,7 @@ const refresAccessToken = asyncHandler( async (req, res) => {
             secure: true
         }
     
-        const { accessToken, newrefreshToken } = await generateAccessAndRefreshTokens(student._id)
+        const { accessToken, newrefreshToken } = await generateAccessAndRefreshTokens(faculty._id)
     
         return res
         .status(200)
@@ -153,7 +150,7 @@ const refresAccessToken = asyncHandler( async (req, res) => {
 })
 
 module.exports = {
-    loginStudent,
-    logoutStudent,
-    refresAccessToken
+    loginFaculty,
+    logoutFaculty,
+    refreshAccessToken
 }
