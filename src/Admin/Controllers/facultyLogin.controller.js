@@ -28,12 +28,12 @@ const loginFaculty = asyncHandler(async (req, res) => {
 
     const {facultyId, password} = req.body
 
-    if(!rollNo) {
+    if(!facultyId) {
         throw new ApiError(400, "facultyId is required")
     }
 
     // find the user
-    const faculty = await studentLogin.findOne({facultyId:facultyId})
+    const faculty = await facultyLogin.findOne({facultyId:facultyId})
 
     if(!faculty) {
         throw new ApiError(404, "faculty does not exist with this facultyId")
@@ -50,7 +50,7 @@ const loginFaculty = asyncHandler(async (req, res) => {
 
     const {accessToken, refreshToken} = await generateAccessAndRefreshTokens(faculty._id)
     
-
+    console.log("After generating RT and AT");
     const loggedInFaculty = await facultyLogin.findById(faculty._id).select("-password -refreshToken")
 
     const options = {

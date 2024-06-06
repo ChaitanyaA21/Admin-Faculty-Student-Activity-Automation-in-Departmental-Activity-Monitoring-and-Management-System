@@ -8,7 +8,6 @@ const facultySchema=mongoose.Schema({
         name:{
             type:String,
             required:true,
-            
         },
         email:{
             type:String,
@@ -30,17 +29,17 @@ const facultySchema=mongoose.Schema({
             required:true
         },
        experience:{
-        type:String,
+        type:Number,
         required:true
        },
        subjects:{
         type:Array,
-        required:true
+       
        },
 
        
 },
 {timestamps:true}
 );
-const faculty=mongoose.model("faculty",facultySchema);
-module.exports = {faculty};
+const facultyModel=mongoose.model("faculty",facultySchema);
+module.exports = {facultyModel};

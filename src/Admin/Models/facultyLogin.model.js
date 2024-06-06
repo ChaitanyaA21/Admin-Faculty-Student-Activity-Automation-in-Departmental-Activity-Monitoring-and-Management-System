@@ -5,7 +5,7 @@ const { faculty } = require('./faculty.model');
 
 const facultyLoginSchema=mongoose.Schema({
     facultyId:{
-        type:string,
+        type:String,
         // ref:"faculty",
         required:true
     },
@@ -33,11 +33,11 @@ facultyLoginSchema.methods.generateAccessToken =function () {
    return jwt.sign(
         {
             _id:this._id,
-            username:this.username
+            facultyId:this.facultyId
         },
         process.env.ACCESS_TOKEN_SECRET,
         {
-            expiresIn:ACCESS_TOKEN_EXPIRY
+            expiresIn:process.env.ACCESS_TOKEN_EXPIRY
         }
     )
  }
@@ -48,7 +48,7 @@ facultyLoginSchema.methods.generateRefreshToken =function () {
         },
         process.env.REFRESH_TOKEN_SECRET,
         {
-            expiresIn:REFRESH_TOKEN_EXPIRY
+            expiresIn:process.env.REFRESH_TOKEN_EXPIRY
         }
     )
 }

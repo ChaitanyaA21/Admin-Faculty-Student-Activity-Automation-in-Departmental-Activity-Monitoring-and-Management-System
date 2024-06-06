@@ -24,10 +24,12 @@ app.use(cookieParser())
 
 //import routes
 const studentRegistrationRouter =require('./Admin/Routes/student.routes.js')
+const facultyRegistrationRouter =require('./Admin/Routes/faculty.routes.js')
 
 
 //Routes DeClaration
 app.use("/api/v2/student",studentRegistrationRouter)
+app.use("/api/v2/faculty",facultyRegistrationRouter)
 
 
 //Server and DataBase connection 
