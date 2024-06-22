@@ -1,5 +1,41 @@
 const mongoose = require('mongoose');
 
+const marksSchema =mongoose.Schema({
+    marks:{
+        type:Number,
+        default:0
+    },
+    assignment:{
+        type:Number,
+        default:0
+    },
+    presentation:{
+        type:Number,
+        default:0
+    }
+})
+const internalMarksSchema =mongoose.Schema({
+    internalOne:marksSchema,
+    internalTwo:marksSchema
+})
+
+const subjectSchema =mongoose.Schema({
+    marks:internalMarksSchema,
+    attendance:[{
+        type: Date,
+        default:0
+    }]
+
+    
+})
+const semesterSchema =mongoose.Schema({
+    semNo:{
+        type:Number,
+        default:1
+    },
+    subjects:[subjectSchema]
+    
+})
 const studentSchema=mongoose.Schema({
         rollNo:{
             type:String,
@@ -69,10 +105,8 @@ const studentSchema=mongoose.Schema({
         specialization:{
             type:String,
         },
-        semNumber:{
-            type:Number,
-            default:1
-        },
+        semNumber:[semesterSchema]
+        ,
         reRegistered:{
             type:Boolean,
             default:false
