@@ -22,21 +22,32 @@ app.use(express.static("public"))
 app.use(cookieParser())
 
 
-//import routes
-const studentRegistrationRouter =require('./Admin/Routes/student.routes.js')
-const facultyRegistrationRouter =require('./Admin/Routes/faculty.routes.js')
+//import admin routes
+const studentRegistrationRouter =require('./Admin/Routes/student.routes.js');
+const facultyRegistrationRouter =require('./Admin/Routes/faculty.routes.js');
+const subjectRouter=require("./Admin/Routes/subject.routes.js");
+const semesterRouter=require("./Admin/Routes/semester.routes.js");
+//import faculty routes
+const facultyRouter = require("./Faculty/Routes/routes.js");
+
 
 
 //Routes DeClaration
 app.use("/api/v2/student",studentRegistrationRouter)
 app.use("/api/v2/faculty",facultyRegistrationRouter)
+app.use("/api/v2/subject",subjectRouter)
+app.use("/api/v2/semester",semesterRouter)
+
+//faculty routes declaration
+
+app.use("/api/v2/faculty/login",facultyRouter);
 
 
 //Server and DataBase connection 
 const start = async () => {
     try {
       await connectDB(process.env.MONGO_URI);
-        // new subjectObj({subjectId:"SubjectId",subjectName:"subjectName"}).save();
+       
         console.log("Connected to Database")
 
       app.listen(PORT, () =>
