@@ -17,32 +17,34 @@ function compare( a, b) {
 }
 //RollNo Generating function
 function rollnoGenerator(studentData){
-   try {
-    let year = new Date().getFullYear().toString();
-    let rollNo =`${year[year.length-2]}${year[year.length-1]}031`;
-    let data= JSON.parse(fs.readFileSync('./src/Admin/Controllers/data.json', 'utf8'))[studentData[0].branch.toUpperCase()]
-    if(!studentData[0].specialization){
+    try {
+        let year = new Date().getFullYear().toString();
+        let rollNo =`${year[year.length-2]}${year[year.length-1]}031`;
+        let data= JSON.parse(fs.readFileSync('./src/Admin/Controllers/data.json', 'utf8'))[studentData[0].branch.toUpperCase()]
+        if(!studentData[0].specialization){
+            
+            rollNo=rollNo+data;
+        }
+        else if(studentData[0].specialization){
+            rollNo=rollNo+data[studentData[0].specialization]
+        }
         
-        rollNo=rollNo+data;
-    }
-    else if(studentData[0].specialization){
-        rollNo=rollNo+data[studentData[0].specialization]
-    }
-    
-    
-    for (let i = 1; i <= studentData.length; i++) {
-        let fourDigitNumber = i.toString().padStart(4, '0');
-        let t=rollNo
-        t=t+fourDigitNumber;
-        console.log(t);
+        
+        for (let i = 1; i <= studentData.length; i++) {
+            let fourDigitNumber = i.toString().padStart(4, '0');
+            let t=rollNo
+            t=t+fourDigitNumber;
+            console.log(t);
 
-        studentData[i-1]["rollNo"]=t;
+            studentData[i-1]["rollNo"]=t;
 
-    }
+        }
    } catch (error) {
-    throw new ApiError(500,`Problem in Generating roll number ${error}`)
+        throw new ApiError(500,`Problem in Generating roll number ${error}`)
    }
 }
+
+
 
 //Student registration
 const registerStudent= async (req,res)=>{
@@ -104,13 +106,24 @@ for (let index = 0; index < data.length; index++) {
         religion:data[index].religion,
         branch:data[index].branch,
         specialization:data[index].specialization,
-        semNumber:data[index].semNumber
+        // semNumber.$[0].subjects.subjectName:"CPDS"
+        semNumber: [{
+            semNo: 1,
+            subjects: {
+                'CPDS': {
+                    subjectName: 'CPDS',
+                }
+            }
+        }]
     })
          await studentLogin.create({
           rollNo: student.rollNo,
           password:studentpassword
         });
 }
+
+
+
    
 
 return res.status(201).json(

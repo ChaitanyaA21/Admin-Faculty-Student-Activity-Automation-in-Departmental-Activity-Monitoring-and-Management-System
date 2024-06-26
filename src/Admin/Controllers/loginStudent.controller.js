@@ -33,9 +33,7 @@ const loginStudent = asyncHandler(async (req, res) => {
     }
 
     // find the user
-    // const {ObjectId}  = mongoose.Types;
 
-    // const rollnoObjectId = new ObjectId(rollNo)
     const student = await studentLogin.findOne({rollNo:rollNo})
 
     if(!student) {

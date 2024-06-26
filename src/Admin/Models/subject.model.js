@@ -9,7 +9,11 @@ const subjectSchema=mongoose.Schema({
     subjectName:{
         type:String,
         required:true
-    }    
+    },  
+    department:{
+        type:String,
+        required:true
+    }  
 });
 const subject=mongoose.model("subject",subjectSchema);
-module.exports = subject;
+module.exports = {subject};

@@ -20,10 +20,14 @@ const internalMarksSchema =mongoose.Schema({
 })
 
 const subjectSchema =mongoose.Schema({
-    marks:internalMarksSchema,
+    subjectName:{
+        type:String,
+        //Will be uncommented after writing subject schema separately
+        // required:true
+    },
+    marks: internalMarksSchema,
     attendance:[{
         type: Date,
-        default:0
     }]
 
     
@@ -33,8 +37,10 @@ const semesterSchema =mongoose.Schema({
         type:Number,
         default:1
     },
-    subjects:[subjectSchema]
-    
+    subjects:{
+        type: Map,
+        of: subjectSchema
+    }
 })
 const studentSchema=mongoose.Schema({
         rollNo:{

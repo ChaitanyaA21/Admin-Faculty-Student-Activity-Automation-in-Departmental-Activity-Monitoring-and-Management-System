@@ -5,6 +5,9 @@ const semesterSchema=mongoose.Schema({
         type:String,
         required:true
     },
+    specialization:{
+        type:String,
+    },
     year:{
         type:Number,
         required:true
@@ -19,4 +22,4 @@ const semesterSchema=mongoose.Schema({
     }
 });
 const semester=mongoose.model("semester",semesterSchema);
-module.exports = semester;
+module.exports = {semester};
