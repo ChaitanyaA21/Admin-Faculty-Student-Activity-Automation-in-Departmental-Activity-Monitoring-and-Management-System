@@ -10,13 +10,13 @@ const updatePassword = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Rollno is required");
     }
 
-    const student = studentLogin.findOne({rollNo: rollNo});
+    const student = await studentLogin.findOne({rollNo: rollNo});
 
     if(!student) {
         throw new ApiError(404, "Student does not exist with this roll no");
     }
 
-    const updatedStudentData = await studentLogin.findOneAndUpdate(
+    await studentLogin.findOneAndUpdate(
         {
             rollNo: rollNo
         },
