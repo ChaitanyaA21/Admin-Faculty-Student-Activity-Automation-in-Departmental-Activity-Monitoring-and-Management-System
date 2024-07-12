@@ -121,8 +121,25 @@ const studentSchema=mongoose.Schema({
         
 },
 {timestamps:true}
-
-
 );
+
+studentSchema.pre("findOneAndUpdate", async function (next) {
+    const update = this.getUpdate();
+    const query = this.getQuery();
+    
+    const oldValues = await this.model.findOne(query);
+    
+    if ((update.phoneNo != oldValues.phoneNo) && update.phoneNo) {
+        update.phoneNo = update.phoneNo;
+        console.log("phone number updated");
+    }
+
+    if ((update.email !== oldValues.email) && update.email) {
+        update.email = update.email;
+        console.log("email updated");
+    }
+    next();
+});
+
 const studentModel= mongoose.model("student",studentSchema);
 module.exports = {studentModel}
