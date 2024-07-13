@@ -16,7 +16,7 @@ const checkAttendance = asyncHandler(async (req, res) => {
         throw new ApiError(404, "Student details not found")
     }
 
-    const subject = Object.fromEntries(student.semNumber[0].subjects);
+    const subject = Object.fromEntries(student.semNumber[semNo].subjects);
     const studentData = subject[subjectName].attendance.length;
 
     res
