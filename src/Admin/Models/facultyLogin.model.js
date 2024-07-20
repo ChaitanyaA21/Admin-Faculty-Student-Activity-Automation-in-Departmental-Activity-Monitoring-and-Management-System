@@ -26,6 +26,14 @@ facultyLoginSchema.pre("save", async function(next) {
     next()
 })
 
+facultyLoginSchema.pre("findOneAndUpdate", async function (next) {
+    const update = this.getUpdate();
+    if (update.password) {
+        update.password = await bcrypt.hash(update.password, 10);
+    }
+    next();
+});
+
 facultyLoginSchema.methods.isPasswordCorrect = async function(password){
     return await bcrypt.compare(password,this.password)
 }

@@ -91,9 +91,9 @@ const logoutStudent = asyncHandler( async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        // secure: true
     }
-
+    console.log("Logged Out SuccessFully");
     return res
     .status(200)
     .clearCookie("accessToken", options)
