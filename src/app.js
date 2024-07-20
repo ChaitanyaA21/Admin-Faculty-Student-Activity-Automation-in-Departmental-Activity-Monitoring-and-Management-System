@@ -8,7 +8,8 @@ const cookieParser =require('cookie-parser')
 
 const connectDB=require('./Admin/DB/connect')
 const {verifyJWT,verifyJWTFaculty} =require('./Admin/Middleware/auth.middleware.js')
-const PORT=process.env.PORT
+const PORT=process.env.PORT || 5000
+
 // const subjectObj=require("./Admin/Models/subject.model")
 
 app.use(cors({
@@ -30,6 +31,8 @@ const subjectRouter=require("./Admin/Routes/subject.routes.js");
 const semesterRouter=require("./Admin/Routes/semester.routes.js");
 //import faculty routes
 const facultyRouter = require("./Faculty/Routes/routes.js");
+//import student routes
+const studentRouter = require("./Student/Routes/routes.js")
 
 
 
@@ -43,13 +46,18 @@ app.use("/api/v2/semester",semesterRouter)
 
 app.use("/api/v2/faculty/login",[verifyJWTFaculty,facultyRouter]);
 
+//student routes declaration
+
+app.use("/api/v2/student/login",studentRouter);
+
 
 //Server and DataBase connection 
 const start = async () => {
     try {
+      const uri = process.env.MONGO_URI
       await connectDB(process.env.MONGO_URI);
        
-        console.log("Connected to Database")
+      console.log("Connected to Database");
 
       app.listen(PORT, () =>
         console.log(`Server is listening on port ${PORT}...`)
