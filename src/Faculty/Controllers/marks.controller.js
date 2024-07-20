@@ -1,10 +1,13 @@
 const { studentModel } = require('../../Admin/Models/student.model.js');
+const {asyncHandler}=require("../../Admin/Utils/asyncHandler.utils.js")
+const {ApiResponse}=require("../../Admin/Utils/ApiResponse.utils.js")
+const {ApiError}=require("../../Admin/Utils/ApiError.utils.js")
 
-const updateInternalMarks = async (req, res) => {
+const updateInternalMarks = asyncHandler(async (req, res) => {
     const { semNo, subjectName, internalMarksValue, studentMarks } = req.body;
 
     if (!semNo || !subjectName || !internalMarksValue || !studentMarks) {
-        return res.status(400).json({ error: 'Invalid input data' });
+        throw new ApiError(404, "Details not given correctly")
     }
 
     const internalField = internalMarksValue === 1 ? 'internalOne' : 'internalTwo';
@@ -33,11 +36,19 @@ const updateInternalMarks = async (req, res) => {
             console.log(result)
         }
 
-        res.status(200).json({ message: 'Internal marks updated successfully' });
+        res.status(200).json(
+            new ApiResponse(
+                200,
+                {
+                    message:`${internalField} is updated`
+                },
+                "successful"
+            )
+        );
     } catch (error) {
         console.error('Error updating internal marks:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        throw new ApiError(500, "error while entering internal marks")
     }
-};
+});
 
 module.exports = { updateInternalMarks };

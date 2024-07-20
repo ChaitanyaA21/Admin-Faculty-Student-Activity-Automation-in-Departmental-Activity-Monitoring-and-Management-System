@@ -7,7 +7,9 @@ const cors = require('cors')
 const cookieParser =require('cookie-parser')
 
 const connectDB=require('./Admin/DB/connect')
+const {verifyJWT,verifyJWTFaculty} =require('./Admin/Middleware/auth.middleware.js')
 const PORT=process.env.PORT || 5000
+
 // const subjectObj=require("./Admin/Models/subject.model")
 
 app.use(cors({
@@ -42,7 +44,7 @@ app.use("/api/v2/semester",semesterRouter)
 
 //faculty routes declaration
 
-app.use("/api/v2/faculty/login",facultyRouter);
+app.use("/api/v2/faculty/login",[verifyJWTFaculty,facultyRouter]);
 
 //student routes declaration
 

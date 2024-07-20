@@ -1,5 +1,8 @@
 const {studentModel}=require("../../Admin/Models/student.model.js");
-const updateAttendance = async (req,res) => {
+const {asyncHandler}=require("../../Admin/Utils/asyncHandler.utils.js")
+const {ApiResponse}=require("../../Admin/Utils/ApiResponse.utils.js")
+const {ApiError}=require("../../Admin/Utils/ApiError.utils.js")
+const updateAttendance = (async (req,res) => {
     try {
         const currentDate = new Date();
 
@@ -24,12 +27,20 @@ const updateAttendance = async (req,res) => {
             );
             console.log('Attendance updated with current date for rollno:', rollNo);
         }
-        res.status(200).json({message:`Updated Attendance`})
+        res.status(200).json(
+            new ApiResponse(
+                200,
+                {
+                    message:"successful"
+                },
+                "successful"
+            )
+        )
     } catch (err) {
         console.error('Error updating attendance:', err);
-        res.status(404).json({message:"Error in adding the attendance"})
+        throw new ApiError(404, "Error while updating attendance")
     }
-};
+});
 
 module.exports={updateAttendance}
 

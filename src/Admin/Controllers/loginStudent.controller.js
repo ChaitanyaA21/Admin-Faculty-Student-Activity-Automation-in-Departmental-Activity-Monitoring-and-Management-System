@@ -23,8 +23,6 @@ const generateAccessAndRefreshTokens = async (studentID) => {
 }
 
 const loginStudent = asyncHandler(async (req, res) => {
-    // TO DOS
-    // req body -> data
 
     const {rollNo, password} = req.body
 
@@ -91,9 +89,9 @@ const logoutStudent = asyncHandler( async (req, res) => {
 
     const options = {
         httpOnly: true,
-        secure: true
+        // secure: true
     }
-
+    console.log("Logged Out SuccessFully");
     return res
     .status(200)
     .clearCookie("accessToken", options)
