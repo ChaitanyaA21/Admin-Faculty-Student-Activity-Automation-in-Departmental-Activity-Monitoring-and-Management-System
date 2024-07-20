@@ -23,8 +23,6 @@ const generateAccessAndRefreshTokens = async (studentID) => {
 }
 
 const loginStudent = asyncHandler(async (req, res) => {
-    // TO DOS
-    // req body -> data
 
     const {rollNo, password} = req.body
 
