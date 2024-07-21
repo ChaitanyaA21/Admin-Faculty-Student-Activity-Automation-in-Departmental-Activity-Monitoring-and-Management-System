@@ -1,155 +1,160 @@
-const { asyncHandler } = require("../Utils/asyncHandler.utils.js")
-const { ApiError } = require("../Utils/ApiError.utils.js")
-const { ApiResponse } = require("../Utils/ApiResponse.utils.js")
-const { studentLogin } = require("../Models/studentLogin.model.js")
-const jwt = require("jsonwebtoken")
-const mongoose=require('mongoose')
+const { asyncHandler } = require("../Utils/asyncHandler.utils.js");
+const { ApiError } = require("../Utils/ApiError.utils.js");
+const { ApiResponse } = require("../Utils/ApiResponse.utils.js");
+const { studentLogin } = require("../Models/studentLogin.model.js");
+const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
 const generateAccessAndRefreshTokens = async (studentID) => {
-    try {
-        const student = await studentLogin.findById(studentID)
-        
-        const accessToken = student.generateAccessToken()
-        const refreshToken = student.generateRefreshToken()
+  try {
+    const student = await studentLogin.findById(studentID);
 
-        student.refreshToken = refreshToken
-        await student.save({ validateBeforeSave: false })
+    const accessToken = student.generateAccessToken();
+    const refreshToken = student.generateRefreshToken();
 
-        return {accessToken, refreshToken}
+    student.refreshToken = refreshToken;
+    await student.save({ validateBeforeSave: false });
 
-    } catch (error) {
-        throw new ApiError(500, `Something went wrong while generating refresh and access tokens: ${error.message}`)
-    }
-}
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(
+      500,
+      `Something went wrong while generating refresh and access tokens: ${error.message}`
+    );
+  }
+};
 
 const loginStudent = asyncHandler(async (req, res) => {
+  const { rollNo, password } = req.body;
 
-    const {rollNo, password} = req.body
+  if (!rollNo) {
+    throw new ApiError(400, "rollno is required");
+  }
 
-    if(!rollNo) {
-        throw new ApiError(400, "rollno is required")
-    }
+  // find the user
 
-    // find the user
+  const student = await studentLogin.findOne({ rollNo: rollNo });
 
-    const student = await studentLogin.findOne({rollNo:rollNo})
+  if (!student) {
+    throw new ApiError(404, "Student does not exist with this roll no");
+  }
 
-    if(!student) {
-        throw new ApiError(404, "Student does not exist with this roll no")
-    }
+  // password check
+  const isPasswordValid = await student.isPasswordCorrect(password);
 
-    // password check
-    const isPasswordValid = await student.isPasswordCorrect(password)
+  if (!isPasswordValid) {
+    throw new ApiError(401, "Invalid user Credentials");
+  }
 
-    if(!isPasswordValid) {
-        throw new ApiError(401, "Invalid user Credentials")
-    }
+  // access and refresh token
 
-    // access and refresh token
+  const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
+    student._id
+  );
 
-    const {accessToken, refreshToken} = await generateAccessAndRefreshTokens(student._id)
-    
+  const loggedInStudent = await studentLogin
+    .findById(student._id)
+    .select("-password -refreshToken");
 
-    const loggedInStudent = await studentLogin.findById(student._id).select("-password -refreshToken")
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
 
-    const options = {
-        httpOnly: true,
-        secure: true
-    }
+  // send cookie
 
-    // send cookie
-
-    return res
+  return res
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
     .json(
-        new ApiResponse(
-            200, 
-            {
-                user: loggedInStudent, accessToken, refreshToken
-            },
-            "User logged in succesfully"
-        )
-    )
-})
-
-const logoutStudent = asyncHandler( async (req, res) => {
-    await studentLogin.findByIdAndUpdate(
-        req.user._id,
+      new ApiResponse(
+        200,
         {
-            $set: {
-                refreshToken: ""
-            }
+          user: loggedInStudent,
+          accessToken,
+          refreshToken,
         },
-        {
-            new: true
-        }
-    )
+        "User logged in succesfully"
+      )
+    );
+});
 
-    const options = {
-        httpOnly: true,
-        // secure: true
+const logoutStudent = asyncHandler(async (req, res) => {
+  await studentLogin.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: "",
+      },
+    },
+    {
+      new: true,
     }
-    console.log("Logged Out SuccessFully");
-    return res
+  );
+
+  const options = {
+    httpOnly: true,
+    // secure: true
+  };
+  console.log("Logged Out SuccessFully");
+  return res
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
-    .json(
-        new ApiResponse(200, {}, "User logged Out")
-    )
-})
+    .json(new ApiResponse(200, {}, `User: ${req.user.rollNo} logged Out`));
+});
 
-const refresAccessToken = asyncHandler( async (req, res) => {
-    try {
-        const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
-    
-        if (incomingRefreshToken) {
-            throw new ApiError(401, "unauthorized request")
-        }
-    
-        const decodedToken = jwt.verify(
-            incomingRefreshToken, 
-            process.env.REFRESH_TOKEN_SECRET
-        )
-    
-        const student = await studentLogin.findById(decodedToken?._id)
-    
-        if(!student) {
-            throw new ApiError(401, "Invalid refresh token")
-        }
-    
-        if(incomingRefreshToken !== student?.refreshToken) {
-            throw new ApiError(401, "Refresh token is expired or used")
-        }
-    
-        const options = {
-            httpOnly: true,
-            secure: true
-        }
-    
-        const { accessToken, newrefreshToken } = await generateAccessAndRefreshTokens(student._id)
-    
-        return res
-        .status(200)
-        .cookie("accessToken", options)
-        .cookie("refreshToken", options)
-        .json(
-            new ApiResponse(
-                200,
-                { accessToken, refreshToken: newrefreshToken },
-                "Access token refreshed"
-            )
-        )
-    } catch (error) {
-        throw new ApiError(401, error?.message || 
-            "Invalid refresh token")
+const refresAccessToken = asyncHandler(async (req, res) => {
+  try {
+    const incomingRefreshToken =
+      req.cookies.refreshToken || req.body.refreshToken;
+
+    if (incomingRefreshToken) {
+      throw new ApiError(401, "unauthorized request");
     }
-})
+
+    const decodedToken = jwt.verify(
+      incomingRefreshToken,
+      process.env.REFRESH_TOKEN_SECRET
+    );
+
+    const student = await studentLogin.findById(decodedToken?._id);
+
+    if (!student) {
+      throw new ApiError(401, "Invalid refresh token");
+    }
+
+    if (incomingRefreshToken !== student?.refreshToken) {
+      throw new ApiError(401, "Refresh token is expired or used");
+    }
+
+    const options = {
+      httpOnly: true,
+      secure: true,
+    };
+
+    const { accessToken, newrefreshToken } =
+      await generateAccessAndRefreshTokens(student._id);
+
+    return res
+      .status(200)
+      .cookie("accessToken", options)
+      .cookie("refreshToken", options)
+      .json(
+        new ApiResponse(
+          200,
+          { accessToken, refreshToken: newrefreshToken },
+          "Access token refreshed"
+        )
+      );
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid refresh token");
+  }
+});
 
 module.exports = {
-    loginStudent,
-    logoutStudent,
-    refresAccessToken
-}
+  loginStudent,
+  logoutStudent,
+  refresAccessToken,
+};

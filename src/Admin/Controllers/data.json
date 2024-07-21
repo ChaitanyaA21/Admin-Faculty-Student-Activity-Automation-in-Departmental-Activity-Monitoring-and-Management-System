@@ -1,8 +1,8 @@
 {
-    "MCA":"F",
-    "MTECH":{
-        "CNIS":"A",
-        "DS":"B",
-        "SE":"C"
-    }
+  "MCA": "F",
+  "MTECH": {
+    "CNIS": "A",
+    "DS": "B",
+    "SE": "C"
+  }
 }
