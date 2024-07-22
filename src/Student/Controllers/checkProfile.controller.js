@@ -4,10 +4,8 @@ const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 
 const checkProfile = asyncHandler(async (req, res) => {
-  console.log(req.user);
-
   const student = await studentModel
-    .findOne({ rollNo: req.user.rollNo })
+    .findOne({ rollNo: req.user?.rollNo })
     .select("-semNumber");
 
   if (!student) {

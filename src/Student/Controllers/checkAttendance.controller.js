@@ -6,7 +6,7 @@ const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 const checkAttendance = asyncHandler(async (req, res) => {
   const { semNo, subjectName } = req.body;
 
-  const student = await studentModel.findOne({ rollNo: req.user.rollNo });
+  const student = await studentModel.findOne({ rollNo: req.user?.rollNo });
 
   if (!student) {
     throw new ApiError(404, "Student details not found");
