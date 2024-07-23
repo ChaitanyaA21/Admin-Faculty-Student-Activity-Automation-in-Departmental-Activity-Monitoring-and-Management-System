@@ -14,6 +14,9 @@ const studentLoginSchema = mongoose.Schema({
   refreshToken: {
     type: String,
   },
+  resetToken: {
+    type: String,
+  },
 });
 
 studentLoginSchema.pre("save", async function (next) {
@@ -38,6 +41,7 @@ studentLoginSchema.methods.generateAccessToken = function () {
     }
   );
 };
+
 studentLoginSchema.methods.generateRefreshToken = function () {
   return jwt.sign(
     {
@@ -49,5 +53,19 @@ studentLoginSchema.methods.generateRefreshToken = function () {
     }
   );
 };
+
+studentLoginSchema.methods.generateResetToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      rollNo: this.rollNo,
+    },
+    process.env.RESET_TOKEN_SECRET,
+    {
+      expiresIn: process.env.RESET_TOKEN_EXPIRY,
+    }
+  );
+};
+
 const studentLogin = mongoose.model("studentLogin", studentLoginSchema);
 module.exports = { studentLogin };

@@ -16,6 +16,9 @@ const facultyLoginSchema = mongoose.Schema({
   refreshToken: {
     type: String,
   },
+  resetToken: {
+    type: String,
+  },
 });
 
 facultyLoginSchema.pre("save", async function (next) {

@@ -233,7 +233,6 @@ const registerStudent = async (req, res) => {
       religion,
       branch,
       specialization,
-      semNumber,
     });
     await studentData.save();
 
