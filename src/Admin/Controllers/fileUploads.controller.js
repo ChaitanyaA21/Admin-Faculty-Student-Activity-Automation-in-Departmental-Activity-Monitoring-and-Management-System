@@ -2,6 +2,7 @@ const { ApiResponse } = require("../Utils/ApiResponse.utils.js");
 const { ApiError } = require("../Utils/ApiError.utils.js");
 const { asyncHandler } = require("../Utils/asyncHandler.utils.js");
 const { uploadOnCloudinary } = require("../Utils/cloudinary.utils.js");
+const fs = require("fs");
 
 const uploadFile = asyncHandler(async (req, res) => {
   try {
@@ -14,7 +15,7 @@ const uploadFile = asyncHandler(async (req, res) => {
       new ApiResponse(200, { url: result.url }, "File uploaded successfully")
     );
   } catch (error) {
-    console.error("Error uploading file:", error);
+    fs.unlinkSync(req.file.path);
     throw new ApiError(
       500,
       error.message || "Something went wrong while uploading the file"
