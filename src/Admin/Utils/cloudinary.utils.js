@@ -10,60 +10,31 @@ cloudinary.config({
 const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) {
-      console.log("No file path provided.");
+      console.log("No file path given");
       return null;
     }
 
-    // Uploading  file to Cloudinary
-    const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
-    });
-
-    // URL
-    const fileUrl = response.secure_url || response.url;
-    console.log("File URL:", fileUrl);
-
-    // Checking  URL validity
-    const { default: fetch } = await import("node-fetch");
-
-    try {
-      const urlResponse = await fetch(fileUrl);
-      if (urlResponse.ok) {
-        console.log("URL is accessible.");
-      } else {
-        console.log("URL is not accessible. Status code:", urlResponse.status);
+    console.log("Uploading file to cloudinary");
+    const response = await cloudinary.uploader.upload(
+      localFilePath,
+      {
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) {
+          console.error("Upload failed:", error);
+        } else {
+          console.log("Upload successful:", result);
+        }
       }
-    } catch (fetchError) {
-      console.error("Error fetching the URL:", fetchError.message);
-    }
+    );
 
-    //deleting local file
-    try {
-      if (fs.existsSync(localFilePath)) {
-        fs.unlinkSync(localFilePath);
-      } else {
-        console.log("File does not exist, cannot delete:", localFilePath);
-      }
-    } catch (fsError) {
-      console.error("Error deleting file:", fsError.message);
+    if (response) {
+      console.log("File uploaded successfully on cloudinary");
+      console.log("Cloudinary URL: ", response.url);
+      return response;
     }
-    return response;
   } catch (error) {
-    console.error("Upload error:", error.message);
-
-    // If upload failed
-    try {
-      if (fs.existsSync(localFilePath)) {
-        fs.unlinkSync(localFilePath);
-        console.log("Local file deleted after error:", localFilePath);
-      }
-    } catch (fsError) {
-      console.error(
-        "Error deleting local file after upload error:",
-        fsError.message
-      );
-    }
-
     return null;
   }
 };
