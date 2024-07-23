@@ -11,6 +11,9 @@ const {
   verifyJWT,
   verifyJWTFaculty,
 } = require("./Admin/Middleware/auth.middleware.js");
+
+const uploadRoute = require("./Admin/Routes/files.routes.js");
+
 const PORT = process.env.PORT || 5000;
 
 // const subjectObj=require("./Admin/Models/subject.model")
@@ -50,6 +53,9 @@ app.use("/api/v2/faculty/login", [verifyJWTFaculty, facultyRouter]);
 //student routes declaration
 
 app.use("/api/v2/student/login", [verifyJWT, studentRouter]);
+
+//forms router
+app.use("/api/v2/upload", uploadRoute);
 
 //Server and DataBase connection
 const start = async () => {
