@@ -30,6 +30,7 @@ const verifyJWT = asyncHandler(async (req, _, next) => {
     throw new ApiError(401, error?.message || "Invalid access token");
   }
 });
+
 const verifyJWTFaculty = asyncHandler(async (req, _, next) => {
   try {
     const token =
@@ -42,15 +43,15 @@ const verifyJWTFaculty = asyncHandler(async (req, _, next) => {
 
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-    const student = await facultyLogin
+    const user = await facultyLogin
       .findById(decodedToken?._id)
       .select("-password -refreshToken");
 
-    if (!student) {
+    if (!user) {
       throw new ApiError(401, "Invalid Access Token");
     }
 
-    req.user = student;
+    req.user = user;
     next();
   } catch (error) {
     throw new ApiError(401, error?.message || "Invalid access token");

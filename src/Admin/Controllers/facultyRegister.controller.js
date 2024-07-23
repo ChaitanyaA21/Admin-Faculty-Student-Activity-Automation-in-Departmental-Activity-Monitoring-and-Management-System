@@ -43,11 +43,13 @@ const registerFaculty = async (req, res) => {
     experience,
     subjects,
   ].some((field) => String(field).trim() === "");
+
   if (detailsCheck) {
     console.log("The fileds are emptyy.Fill All the fileds");
   } else {
     console.log("All the details are Entered");
   }
+
   //Create Faculty id's
   const facultyIdG = facultyIdGenerator(experience);
   //Generate Password

@@ -4,13 +4,16 @@ const { ApiError } = require("../../Admin/Utils/ApiError.utils.js");
 const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 
 const updateContact = asyncHandler(async (req, res) => {
+  const { newphoneNo, newEmail } = req.body;
+
   let result1 = null,
     result2 = null;
+
   let updated = "";
   if (newphoneNo) {
     result1 = await studentModel.findOneAndUpdate(
       {
-        rollNo: req.user.rollNo,
+        rollNo: req.user?.rollNo,
       },
       {
         phoneNo: newphoneNo,
@@ -25,7 +28,7 @@ const updateContact = asyncHandler(async (req, res) => {
   if (newEmail) {
     result2 = await studentModel.findOneAndUpdate(
       {
-        rollNo: req.user.rollNo,
+        rollNo: req.user?.rollNo,
       },
       {
         email: newEmail,

@@ -31,6 +31,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 //import admin routes
+const passwordRouter = require("./Admin/Routes/password.routes.js");
 const studentRegistrationRouter = require("./Admin/Routes/student.routes.js");
 const facultyRegistrationRouter = require("./Admin/Routes/faculty.routes.js");
 const subjectRouter = require("./Admin/Routes/subject.routes.js");
@@ -41,6 +42,7 @@ const facultyRouter = require("./Faculty/Routes/routes.js");
 const studentRouter = require("./Student/Routes/routes.js");
 
 //Routes DeClaration
+app.use("/api/v2/password", passwordRouter);
 app.use("/api/v2/student", studentRegistrationRouter);
 app.use("/api/v2/faculty", facultyRegistrationRouter);
 app.use("/api/v2/subject", subjectRouter);

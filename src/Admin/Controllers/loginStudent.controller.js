@@ -105,12 +105,12 @@ const logoutStudent = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, `User: ${req.user.rollNo} logged Out`));
 });
 
-const refresAccessToken = asyncHandler(async (req, res) => {
+const refreshAccessToken = asyncHandler(async (req, res) => {
   try {
     const incomingRefreshToken =
       req.cookies.refreshToken || req.body.refreshToken;
 
-    if (incomingRefreshToken) {
+    if (!incomingRefreshToken) {
       throw new ApiError(401, "unauthorized request");
     }
 
@@ -156,5 +156,5 @@ const refresAccessToken = asyncHandler(async (req, res) => {
 module.exports = {
   loginStudent,
   logoutStudent,
-  refresAccessToken,
+  refreshAccessToken,
 };
