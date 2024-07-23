@@ -6,7 +6,11 @@ const facultySchema = mongoose.Schema(
       type: String,
       uppercase: true,
     },
-    name: {
+    firstname: {
+      type: String,
+      required: true,
+    },
+    lastname: {
       type: String,
       required: true,
     },

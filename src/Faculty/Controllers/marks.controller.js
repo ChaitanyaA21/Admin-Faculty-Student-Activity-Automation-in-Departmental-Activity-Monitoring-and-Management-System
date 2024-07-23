@@ -13,43 +13,45 @@ const updateInternalMarks = asyncHandler(async (req, res) => {
   const internalField =
     internalMarksValue === 1 ? "internalOne" : "internalTwo";
 
-  try {
-    for (const [rollNo, marks, assignment, presentation] of studentMarks) {
-      const updatePath = `semNumber.$[semIndex].subjects.${subjectName}.marks.${internalField}`;
+  for (const [rollNo, marks, assignment, presentation] of studentMarks) {
+    const updatePath = `semNumber.$[semIndex].subjects.${subjectName}.marks.${internalField}`;
 
-      const updateData = {
-        [`${updatePath}.marks`]: marks,
-        [`${updatePath}.assignment`]: assignment,
-        [`${updatePath}.presentation`]: presentation,
-      };
+    const updateData = {
+      [`${updatePath}.marks`]: marks,
+      [`${updatePath}.assignment`]: assignment,
+      [`${updatePath}.presentation`]: presentation,
+    };
 
-      const result = await studentModel.updateOne(
-        {
-          rollNo: rollNo,
-          "semNumber.semNo": semNo,
-        },
-        { $set: updateData },
-        {
-          arrayFilters: [{ "semIndex.semNo": semNo }],
-        }
-      );
-
-      console.log(result);
-    }
-
-    res.status(200).json(
-      new ApiResponse(
-        200,
-        {
-          message: `${internalField} is updated`,
-        },
-        "successful"
-      )
+    const result = await studentModel.updateOne(
+      {
+        rollNo: rollNo,
+        "semNumber.semNo": semNo,
+      },
+      { $set: updateData },
+      {
+        arrayFilters: [{ "semIndex.semNo": semNo }],
+      }
     );
-  } catch (error) {
-    console.error("Error updating internal marks:", error);
-    throw new ApiError(500, "error while entering internal marks");
+
+    console.log(result);
   }
+
+  if (!result) {
+    throw new ApiError(
+      500,
+      "Internal Server Error while updating internal marks"
+    );
+  }
+
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        message: `${internalField} is updated`,
+      },
+      "successful"
+    )
+  );
 });
 
 module.exports = { updateInternalMarks };

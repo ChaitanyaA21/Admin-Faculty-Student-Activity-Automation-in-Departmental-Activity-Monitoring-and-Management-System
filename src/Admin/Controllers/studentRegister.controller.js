@@ -150,26 +150,6 @@ const registerStudent = async (req, res) => {
       semNumber,
     } = req.body;
 
-    console.log(
-      rollNo,
-      firstname,
-      lastname,
-      email,
-      phoneNo,
-      aadharNo,
-      motherName,
-      fatherName,
-      parentNo,
-      dateOfBirth,
-      permanentAddress,
-      presentAddress,
-      bloodGroup,
-      caste,
-      religion,
-      branch,
-      specialization,
-      semNumber
-    );
     //check whether all the details are present
     const detailsCheck = [
       rollNo,
@@ -233,7 +213,6 @@ const registerStudent = async (req, res) => {
       religion,
       branch,
       specialization,
-      semNumber,
     });
     await studentData.save();
 

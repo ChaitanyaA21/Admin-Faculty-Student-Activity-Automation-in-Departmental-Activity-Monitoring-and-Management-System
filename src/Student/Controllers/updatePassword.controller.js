@@ -6,7 +6,7 @@ const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 const updatePassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
 
-  const student = await studentLogin.findById(req.user._id);
+  const student = await studentLogin.findById(req.user?._id);
 
   if (!student) {
     throw new ApiError(404, "Student does not exist with this roll no");
