@@ -5,7 +5,7 @@ const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 
 
 const updateContact = asyncHandler(async (req, res) => {
-    const {facultyId, newphoneNo, newEmail} = req.body;
+    const { newphoneNo, newEmail} = req.body;
 
     if(!facultyId) {
         throw new ApiError(400, "Faculty Id is required");
@@ -16,7 +16,7 @@ const updateContact = asyncHandler(async (req, res) => {
     if(newphoneNo) {
         result1 = await facultyModel.findOneAndUpdate(
             {
-                facultyId:facultyId
+                facultyId:req.user.facultyId
             },
             {
                 phoneNo: newphoneNo
@@ -31,7 +31,7 @@ const updateContact = asyncHandler(async (req, res) => {
     if(newEmail) {
         result2 = await facultyModel.findOneAndUpdate(
             {
-                facultyId:facultyId
+                facultyId:req.user.facultyId
             },
             {
                 email: newEmail

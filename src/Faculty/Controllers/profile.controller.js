@@ -4,13 +4,12 @@ const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js")
 
 const checkProfile = asyncHandler(async (req, res) => {
-    const {facultyId} = req.body;
-
+   
     if(!facultyId) {
         throw new ApiError(400, "Faculty id is required");
     }
 
-    const faculty = await facultyModel.findOne({facultyId: facultyId});
+    const faculty = await facultyModel.findOne({facultyId: req.user.facultyId});
 
     if(!faculty) {
         throw new ApiError(400, "Faculty details not found");

@@ -4,13 +4,10 @@ const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js")
 
 const updatePassword = asyncHandler(async (req, res) => {
-    const {facultyId, newPassword} = req.body;
+    const {newPassword} = req.body;
 
-    if(!facultyId) {
-        throw new ApiError(400, "faculty Id is required");
-    }
 
-    const faculty = await facultyLogin.findOne({facultyId:facultyId});
+    const faculty = await facultyLogin.findOne({facultyId:req.user.facultyId});
 
     if(!faculty) {
         throw new ApiError(404, "faculty does not exist with this faculty Id");
@@ -18,7 +15,7 @@ const updatePassword = asyncHandler(async (req, res) => {
 
     await facultyLogin.findOneAndUpdate(
         {
-            facultyId: facultyId
+            facultyId: req.user.facultyId
         },
         {
             password: newPassword
