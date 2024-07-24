@@ -57,7 +57,7 @@ app.use("/api/v2/faculty/login", [verifyJWTFaculty, facultyRouter]);
 app.use("/api/v2/student/login", [verifyJWT, studentRouter]);
 
 //forms router
-app.use("/api/v2/upload", uploadRoute);
+app.use("/api/v2", uploadRoute);
 
 //Server and DataBase connection
 const start = async () => {
