@@ -66,21 +66,19 @@ const uploadFile = asyncHandler(async (req, res) => {
           url: result.url,
           branch: req.body.branch,
           academicYear: req.body.academicYear,
-          semNo: req.body.semNo,
           public_id: result.public_id,
         });
         break;
       default:
         throw new ApiError(400, "Invalid type parameter");
     }
-    // fs.unlinkSync(req.file.path);
+
     await data.save();
 
     return res.json(
       new ApiResponse(200, { url: result.url }, "File uploaded successfully")
     );
   } catch (error) {
-    // fs.unlinkSync(req.file.path);
     throw new ApiError(
       500,
       error.message || "Something went wrong while uploading the file"
