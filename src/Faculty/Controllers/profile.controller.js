@@ -5,10 +5,7 @@ const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js")
 
 const checkProfile = asyncHandler(async (req, res) => {
    
-    if(!facultyId) {
-        throw new ApiError(400, "Faculty id is required");
-    }
-
+   
     const faculty = await facultyModel.findOne({facultyId: req.user.facultyId});
 
     if(!faculty) {
