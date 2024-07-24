@@ -1,13 +1,20 @@
-const express = require("express");
-const router = express.Router();
+const express = require('express');
+const router=express.Router()
 
-// controllers
+//controllers
 
-const { updateAttendance } = require("../Controllers/attendance.controller.js");
-const { updateInternalMarks } = require("../Controllers/marks.controller.js");
+const {updateAttendance}=require("../Controllers/attendance.controller.js");
+const {updateInternalMarks}=require("../Controllers/marks.controller.js");
+const {checkProfile}=require("../Controllers/profile.controller.js")
+const {updatePassword}=require("../Controllers/updatePassword.controller.js")
+const {updateContact}=require("../Controllers/updateContact.controller.js")
 
-// routes
+
 router.route("/attendance").post(updateAttendance);
 router.route("/internalmarks").post(updateInternalMarks);
+router.route("/checkprofile").post(checkProfile);
+router.route("/password").post(updatePassword);
+router.route("/contact").post(updateContact);
+
 
 module.exports = router;
