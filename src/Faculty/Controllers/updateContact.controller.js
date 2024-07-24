@@ -7,10 +7,6 @@ const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 const updateContact = asyncHandler(async (req, res) => {
     const { newphoneNo, newEmail} = req.body;
 
-    if(!facultyId) {
-        throw new ApiError(400, "Faculty Id is required");
-    }
-
     let result1 = null, result2 = null;
     let updated = "";
     if(newphoneNo) {
