@@ -4,10 +4,14 @@ const path = require("path");
 // File type validation function
 const fileFilter = (req, file, cb) => {
   // Allow only PDF files
-  if (file.mimetype === "application/pdf") {
+  if (
+    file.mimetype === "application/pdf" ||
+    file.mimetype ===
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  ) {
     cb(null, true);
   } else {
-    cb(new Error("Only PDF files are allowed!"), false);
+    cb(new Error("Only PDF and xlsx files  are allowed!"), false);
   }
 };
 
