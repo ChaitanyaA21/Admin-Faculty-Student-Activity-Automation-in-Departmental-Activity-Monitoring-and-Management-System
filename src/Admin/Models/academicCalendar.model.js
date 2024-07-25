@@ -17,10 +17,6 @@ const academicCalendarSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
-  semNo: {
-    type: Number,
-    required: true,
-  },
   public_id: {
     type: String,
     required: true,

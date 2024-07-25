@@ -58,7 +58,6 @@ studentLoginSchema.methods.generateResetToken = function () {
   return jwt.sign(
     {
       _id: this._id,
-      rollNo: this.rollNo,
     },
     process.env.RESET_TOKEN_SECRET,
     {
