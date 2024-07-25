@@ -1,41 +1,32 @@
-const {facultyLogin}=require("../../Admin/Models/facultyLogin.model.js")
+const { facultyLogin } = require("../../Admin/Models/facultyLogin.model.js");
 const { ApiError } = require("../../Admin/Utils/ApiError.utils.js");
 const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
-const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js")
+const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 
 const updatePassword = asyncHandler(async (req, res) => {
-    const {newPassword} = req.body;
+  const { oldPassword, newPassword } = req.body;
 
+  const user = await facultyLogin.findById(req.user?._id);
 
-    const faculty = await facultyLogin.findOne({facultyId:req.user.facultyId});
+  if (!user) {
+    throw new ApiError(404, "User does not exist with this roll no");
+  }
 
-    if(!faculty) {
-        throw new ApiError(404, "faculty does not exist with this faculty Id");
-    }
+  const isPasswordValid = await student.isPasswordCorrect(oldPassword);
 
-    await facultyLogin.findOneAndUpdate(
-        {
-            facultyId: req.user.facultyId
-        },
-        {
-            password: newPassword
-        },
-        {
-            new: true
-        }
-    );
+  if (!isPasswordValid) {
+    throw new ApiError(404, "Password is incorrect");
+  }
 
-    res
+  user.password = newPassword;
+  const result = await user.save({ validateBeforeSave: false });
+
+  if (!result) {
+    throw new ApiError(500, "Internal Server Error while updating password");
+  }
+  res
     .status(200)
-    .json(
-        new ApiResponse(
-            200,
-            {
-                msg: "Successfull"
-            },
-            "Successfully updated password"
-        )
-    )
-})
+    .json(new ApiResponse(200, {}, "Successfully updated password"));
+});
 
-module.exports = {updatePassword}
+module.exports = { updatePassword };

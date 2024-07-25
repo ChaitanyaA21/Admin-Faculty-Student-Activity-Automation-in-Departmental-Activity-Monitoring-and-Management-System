@@ -1,29 +1,30 @@
-const { studentModel } = require("../../Admin/Models/student.model.js");
+const {
+  marksAndAttendanceModel,
+} = require("../../Admin/Models/marksAndAttendance.model.js");
 const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 const { ApiError } = require("../../Admin/Utils/ApiError.utils.js");
 const updateAttendance = async (req, res) => {
+  const { studentRollNos, subjectName } = req.body;
+
   const currentDate = new Date();
 
-  const { studentRollNo, semNo, subjectName } = req.body;
-
-  for (let rollNo of studentRollNo) {
-    await studentModel.findOneAndUpdate(
+  for (const rollNo of studentRollNos) {
+    await marksAndAttendanceModel.findOneAndUpdate(
       {
         rollNo: rollNo,
-        "semNumber.semNo": semNo,
-        [`semNumber.subjects.${subjectName}.subjectName`]: subjectName,
+        subjectName,
       },
       {
         $push: {
-          [`semNumber.$[semIndex].subjects.${subjectName}.attendance`]:
-            currentDate,
+          attendance: currentDate,
         },
       },
 
       {
         new: true,
-        arrayFilters: [{ "semIndex.semNo": semNo }],
+        upsert: true,
+        runValidators: false,
       }
     );
     console.log("Attendance updated with current date for rollno:", rollNo);
@@ -40,7 +41,6 @@ const updateAttendance = async (req, res) => {
 };
 
 module.exports = { updateAttendance };
-
 // const addAttendance = async(studentRollNumbers)=>{
 //     const today = new Date();
 
