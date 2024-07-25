@@ -72,6 +72,7 @@ const uploadFile = asyncHandler(async (req, res) => {
       default:
         throw new ApiError(400, "Invalid type parameter");
     }
+    
     await data.save();
 
     return res.json(

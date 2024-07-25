@@ -4,6 +4,7 @@ const { asyncHandler } = require("../Utils/asyncHandler.utils.js");
 const { studentLogin } = require("../Models/studentLogin.model.js");
 const { facultyLogin } = require("../Models/facultyLogin.model.js");
 const jwt = require("jsonwebtoken");
+const { adminModel } = require("../Models/adminDetails.model.js");
 
 const verifyJWT = asyncHandler(async (req, _, next) => {
   try {
@@ -53,4 +54,30 @@ const verifyJWTFaculty = asyncHandler(async (req, _, next) => {
   req.user = user;
   next();
 });
-module.exports = { verifyJWT, verifyJWTFaculty };
+const verifyJWTAdmin = asyncHandler(async (req, _, next) => {
+  try {
+    const token =
+      req.cookies?.accessToken ||
+      req.header("Authorization")?.replace("Bearer ", "");
+
+    if (!token) {
+      throw new ApiError(401, "Unauthorized request");
+    }
+
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+    const user = await adminModel
+      .findById(decodedToken?._id)
+      .select("-password -refreshToken");
+
+    if (!user) {
+      throw new ApiError(401, "Invalid Access Token");
+    }
+
+    req.user = user;
+    next();
+  } catch (error) {
+    throw new ApiError(401, error?.message || "Invalid access token");
+  }
+});
+module.exports = { verifyJWT, verifyJWTFaculty, verifyJWTAdmin };
