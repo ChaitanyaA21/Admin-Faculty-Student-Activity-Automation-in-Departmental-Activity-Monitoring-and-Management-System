@@ -6,6 +6,10 @@ const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 const updateContact = asyncHandler(async (req, res) => {
   const { newphoneNo, newEmail } = req.body;
 
+  if (!newphoneNo && !newEmail) {
+    throw new ApiError(404, "Details Not Provided");
+  }
+
   let result1 = null,
     result2 = null;
 

@@ -20,7 +20,7 @@ function compare(a, b) {
 function rollnoGenerator(studentData) {
   try {
     let year = new Date().getFullYear().toString();
-    let rollNo = "${year[year.length - 2]}${year[year.length - 1]}031";
+    let rollNo = `${year[year.length - 2]}${year[year.length - 1]}031`;
     let data = JSON.parse(
       fs.readFileSync("./src/Admin/Controllers/data.json", "utf8")
     )[studentData[0].branch.toUpperCase()];
@@ -38,7 +38,7 @@ function rollnoGenerator(studentData) {
       studentData[i - 1]["rollNo"] = t;
     }
   } catch (error) {
-    throw new ApiError(500, "Problem in Generating roll number ${error}");
+    throw new ApiError(500, `Problem in Generating roll number ${error}`);
   }
 }
 
@@ -66,7 +66,7 @@ const registerStudent = async (req, res) => {
           if (object[key].toString().trim() === "") {
             throw new ApiError(
               400,
-              '${object["firstname"]} has some missing details'
+              `${object["firstname"]} has some missing details`
             );
           }
         }
@@ -100,6 +100,7 @@ const registerStudent = async (req, res) => {
           religion: data[index].religion,
           branch: data[index].branch,
           specialization: data[index].specialization,
+          academicYear: data[index].academicYear,
         });
         await studentLogin.create({
           rollNo: student.rollNo,
@@ -137,7 +138,7 @@ const registerStudent = async (req, res) => {
       religion,
       branch,
       specialization,
-      semNumber,
+      academicYear,
     } = req.body;
 
     //check whether all the details are present
@@ -158,8 +159,7 @@ const registerStudent = async (req, res) => {
       caste,
       religion,
       branch,
-      specialization,
-      semNumber,
+      academicYear,
     ].some((field) => String(field).trim() === "");
     if (detailsCheck) {
       console.log("The fileds are emptyy.Fill All the fileds");
@@ -203,6 +203,7 @@ const registerStudent = async (req, res) => {
       religion,
       branch,
       specialization,
+      academicYear,
     });
     await studentData.save();
 

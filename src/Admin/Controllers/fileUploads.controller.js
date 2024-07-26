@@ -72,7 +72,7 @@ const uploadFile = asyncHandler(async (req, res) => {
       default:
         throw new ApiError(400, "Invalid type parameter");
     }
-    
+
     await data.save();
 
     return res.json(
@@ -114,13 +114,13 @@ const viewFile = asyncHandler(async (req, res) => {
         break;
 
       case "academicCalendar":
-        if (!branch || !academicYear || !semNo) {
+        if (!branch || !academicYear) {
           throw new ApiError(
             400,
             "branch, academicYear, and semNo query parameters are required"
           );
         }
-        data = await academicCalendar.find({ branch, academicYear, semNo });
+        data = await academicCalendar.find({ branch, academicYear });
         break;
 
       default:
