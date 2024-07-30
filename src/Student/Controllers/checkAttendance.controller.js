@@ -14,12 +14,13 @@ const checkAttendance = asyncHandler(async (req, res) => {
       subjectName,
     },
     {
-      attendance: 1,
+      present: 1,
+      absent: 1,
+      subjectName: 1,
     }
   );
-
   if (!attendance) {
-    throw new ApiError(404, "Student details not found");
+    return res.status(201).json(new ApiResponse(201, {}, "No results found"));
   }
 
   res.status(200).json(new ApiResponse(200, attendance, "Successfull"));

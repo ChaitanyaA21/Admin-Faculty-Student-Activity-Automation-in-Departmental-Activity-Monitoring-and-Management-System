@@ -2,7 +2,10 @@ const express = require("express");
 const router = express.Router();
 const { upload } = require("../Middleware/multer.middleware.js");
 const { verifyJWT } = require("../Middleware/auth.middleware.js");
-const registerStudent = require("../Controllers/studentRegister.controller.js");
+const {
+  registerStudent,
+  getStudentDetails,
+} = require("../Controllers/studentRegister.controller.js");
 const {
   viewStudents,
   deleteStudents,
@@ -24,5 +27,6 @@ router.route("/logout").get(verifyJWT, logoutStudent);
 router.route("/refreshtoken").post(refreshAccessToken);
 router.route("/viewstudents").post(viewStudents);
 router.route("/deletestudents").delete(deleteStudents);
+router.route("/getstudents").post(getStudentDetails);
 
 module.exports = router;

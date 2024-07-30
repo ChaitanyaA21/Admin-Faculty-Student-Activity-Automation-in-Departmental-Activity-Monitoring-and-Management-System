@@ -23,7 +23,7 @@ const subjectSchema = mongoose.Schema({
   specialization: {
     type: String,
   },
-  year: {
+  academicYear: {
     type: Number,
     required: true,
   },
@@ -38,6 +38,9 @@ const subjectSchema = mongoose.Schema({
   subjectName: {
     type: String,
     required: true,
+  },
+  facultyId: {
+    type: String,
   },
 });
 

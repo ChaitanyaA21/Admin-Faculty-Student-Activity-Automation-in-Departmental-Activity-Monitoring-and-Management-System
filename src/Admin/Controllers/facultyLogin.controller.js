@@ -54,7 +54,6 @@ const loginFaculty = asyncHandler(async (req, res) => {
     faculty._id
   );
 
-  console.log("After generating RT and AT");
   const loggedInFaculty = await facultyLogin
     .findById(faculty._id)
     .select("-password -refreshToken");
