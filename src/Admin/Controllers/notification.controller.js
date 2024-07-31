@@ -7,14 +7,14 @@ const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 // use viewFaculty in viewFaculty.controller.js
 
 const viewNotifications = asyncHandler(async (req, res) => {
-  const { admin } = req.params;
+  const { type } = req.params;
 
-  let query;
+  let query = {};
   if (req.user.rollNo) {
     query.toUserId = req.user.rollNo;
   } else if (req.user.facultyId) {
-    query.toUserId = req.uesr.facultyId;
-  } else if (admin === "admin") {
+    query.toUserId = req.user.facultyId;
+  } else if (type === "admin") {
     query.toUserId = process.env.ADMIN_ID;
   }
 
@@ -30,25 +30,44 @@ const viewNotifications = asyncHandler(async (req, res) => {
 const createNotification = asyncHandler(async (req, res) => {
   const { userId, message } = req.body;
   // if admin wants to create notification then provide "admin" in req.params.admin
-  const { admin } = req.params;
+  const { type } = req.params;
 
   if (!userId || !message) {
     throw new ApiError(404, "Client Error: Info not provided");
   }
-
+  // NOTE: if any user wants to create notification either student or faculty has to give "admin" as
+  // params value
   let data = {};
-  if (req.user.rollNo) {
+  if (req.user?.rollNo) {
     data.from = req.user.rollNo;
-  } else if (req.user.facultyId) {
+    data.branch = req.userDetails.branch;
+    data.academicYear = req.userDetails.academicYear;
+    data.semNo = req.userDetails.semNo;
+    if (req.user?.specialization) {
+      data.specialization = req.userDetails.specialization;
+    }
+  } else if (req.user?.facultyId) {
     data.from = req.user.facultyId;
-  } else if (admin === "admin") {
+  } else if (type === "admin") {
     data.from = process.env.ADMIN_ID;
   } else {
     throw new ApiError(404, "User Not Authorized");
   }
 
+  // if any user wants to send notification to admin then in params
+  // the user should send "admin" as value
   let result;
-  if (req.user.rollNo || req.user.facultyId) {
+  if (type === "admin" && (req.user?.rollNo || req.user?.facultyId)) {
+    data = {
+      ...data,
+      toUserId: process.env.ADMIN_ID,
+      firstname: req.userDetails.firstname,
+      lastname: req.userDetails.lastname,
+      message,
+    };
+
+    result = await notification.create(data);
+  } else if (req.user) {
     data = {
       ...data,
       toUserId: userId,
@@ -82,7 +101,8 @@ const createNotification = asyncHandler(async (req, res) => {
 const deleteNotification = asyncHandler(async (req, res) => {
   const { ids } = req.body;
 
-  if (Array.isArray(ids) || ids.length === 0) {
+  console.log(ids);
+  if (!Array.isArray(ids) || ids.length === 0) {
     throw new ApiError(
       404,
       "Client Error: Either Details are not provided or It is not an array"
@@ -104,8 +124,12 @@ const deleteNotification = asyncHandler(async (req, res) => {
 const readNotification = asyncHandler(async (req, res) => {
   const { ids } = req.body;
 
-  if (Array.isArray(ids) || ids.length === 0) {
-    throw new ApiError(404, "Client Error: ");
+  console.log(Array.isArray(ids), ids.length);
+  if (!Array.isArray(ids) || ids.length === 0) {
+    throw new ApiError(
+      404,
+      "Client Error: Given details are either empty or is not an array"
+    );
   }
 
   const result = await notification.updateMany(
@@ -122,3 +146,10 @@ const readNotification = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, {}, "Successful"));
 });
+
+module.exports = {
+  viewNotifications,
+  createNotification,
+  deleteNotification,
+  readNotification,
+};

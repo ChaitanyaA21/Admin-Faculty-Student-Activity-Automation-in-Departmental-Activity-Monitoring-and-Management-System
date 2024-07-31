@@ -19,6 +19,18 @@ const notificationSchema = mongoose.Schema({
     type: String,
     required: [true, "Provide message to send"],
   },
+  branch: {
+    type: String,
+  },
+  academicYear: {
+    type: Number,
+  },
+  semNo: {
+    type: Number,
+  },
+  specialization: {
+    type: String,
+  },
   hasRead: {
     type: Boolean,
     default: false,
