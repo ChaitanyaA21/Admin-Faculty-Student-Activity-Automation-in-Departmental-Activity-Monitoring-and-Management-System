@@ -11,6 +11,7 @@ const {
 router.route("/adminregistration").post(registerAdmin);
 router.route("/login").post(loginAdmin);
 //Secure the routes
+
 router.route("/logout").post(verifyJWTAdmin, logoutAdmin);
 router.route("/refreshtoken").post(refreshAccessToken);
 

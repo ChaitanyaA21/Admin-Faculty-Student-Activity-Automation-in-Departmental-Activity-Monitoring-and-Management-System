@@ -69,6 +69,10 @@ const studentSchema = mongoose.Schema(
     specialization: {
       type: String,
     },
+    semNo: {
+      type: Number,
+      default: 1,
+    },
 
     reRegistered: {
       type: Boolean,

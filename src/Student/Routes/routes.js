@@ -15,6 +15,9 @@ const {
 } = require("../Controllers/checkInternalMarks.controller.js");
 const { checkProfile } = require("../Controllers/checkProfile.controller.js");
 const { viewFiles } = require("../Controllers/viewFiles.controller.js");
+const {
+  getSubjects,
+} = require("../../Admin/Controllers/facultyRegister.controller.js");
 
 // routes
 
@@ -24,5 +27,6 @@ router.route("/updatecontact").patch(updateContact);
 router.route("/internalmarks").post(checkInternalMarks);
 router.route("/profile").get(checkProfile);
 router.route("/viewfiles/:type").get(viewFiles);
+router.route("/getsubjects").post(getSubjects);
 
 module.exports = router;

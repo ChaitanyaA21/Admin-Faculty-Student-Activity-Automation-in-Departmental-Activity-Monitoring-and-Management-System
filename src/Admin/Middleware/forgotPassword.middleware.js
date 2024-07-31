@@ -9,7 +9,6 @@ const { facultyLogin } = require("../Models/facultyLogin.model.js");
 
 const forgotPassword = asyncHandler(async (req, res) => {
   const { email, userType } = req.body;
-
   if (!email) {
     throw new ApiError(404, "Email not given");
   }
@@ -25,12 +24,8 @@ const forgotPassword = asyncHandler(async (req, res) => {
       throw new ApiError(404, "Student does not exist");
     }
     loginDocument = await studentLogin.findOne({ rollNo: document?.rollNo });
-    console.log("exited from if condition");
   } else if (userType.toLowerCase() === "faculty") {
-    document = await facultyModel.findOne(
-      { email: email },
-      { faculyId: 1, email: 1, firstname: 1, lastname: 1 }
-    );
+    document = await facultyModel.findOne({ email: email }, { _id: 0 });
 
     if (!document) {
       throw new ApiError(404, "Faculty record does not exist");
@@ -48,18 +43,18 @@ const forgotPassword = asyncHandler(async (req, res) => {
   if (!document || !loginDocument) {
     throw new ApiError(404, "User does not exist");
   }
-
   const resetToken = loginDocument.generateResetToken();
   loginDocument.resetToken = resetToken;
   await loginDocument.save({ validateBeforeSave: false });
 
   const subject = "Password Reset Request for Your Account";
+  // http://localhost:5000/api/v2/password/resetpassword?usertype=${userType}&token=${[resetToken]}
 
   const text = `Dear ${document?.firstname} ${document?.lastname},
 
 We received a request to reset the password for your account associated with this email address. If you made this request, please click on the link below to reset your password:
 
-http://localhost:5000/api/v2/password/resetpassword?usertype=${userType}&token=${[resetToken]}
+http://localhost:5173/resetpassword?usertype=${userType}&token=${[resetToken]}
 
 This link will expire in 30 minutes for security reasons. If you did not request a password reset, please ignore this email or contact our support team if you have any concerns.
 

@@ -4,14 +4,20 @@ const { ApiResponse } = require("../Utils/ApiResponse.utils.js");
 const { asyncHandler } = require("../Utils/asyncHandler.utils.js");
 //add subjects
 const addSubject = asyncHandler(async (req, res) => {
-  const { branch, specialization, year, semNo, subjectId, subjectName } =
-    req.body;
+  const {
+    branch,
+    specialization,
+    academicYear,
+    semNo,
+    subjectId,
+    subjectName,
+  } = req.body;
 
-  if (!branch || !year || !semNo || !subjectId || !subjectName) {
+  if (!branch || !academicYear || !semNo || !subjectId || !subjectName) {
     throw new ApiError(400, "Some details are missing");
   }
 
-  let data = { branch, year, semNo, subjectId, subjectName };
+  let data = { branch, academicYear, semNo, subjectId, subjectName };
 
   if (specialization) {
     data.specialization = specialization;
@@ -46,25 +52,37 @@ const deleteSubjects = asyncHandler(async (req, res) => {
 //View subjects
 
 const viewSubjects = asyncHandler(async (req, res) => {
-  const { branch, specialization, year, semNo } = req.body;
+  let { branch, specialization, academicYear, semNo } = req.body;
 
-  // if (!branch || !year || !semNo) {
-  //   throw new ApiError(404, "Details for deletion are missing");
-  // }
-
-  let data = { branch, year, semNo };
+  academicYear = Number(academicYear);
+  semNo = Number(semNo);
+  let data = { branch, academicYear, semNo };
 
   if (specialization) {
     data.specialization = specialization;
   }
 
+  // Add condition to find subjects with empty facultyId
+  data.facultyId = { $in: [null, ""] };
+
   const subjects = await subject.find(data, { _id: 0 });
 
   if (subjects.length === 0) {
-    throw new ApiError(404, "No subjects found for the given details");
+    throw new ApiError(
+      404,
+      "No unassigned subjects found for the given details"
+    );
   }
 
-  res.status(200).json(new ApiResponse(200, subjects, "Successful"));
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        subjects,
+        "Successfully retrieved unassigned subjects"
+      )
+    );
 });
 
 //Update Subject
