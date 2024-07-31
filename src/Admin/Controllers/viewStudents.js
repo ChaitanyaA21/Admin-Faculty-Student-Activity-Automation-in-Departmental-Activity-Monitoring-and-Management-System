@@ -1,4 +1,6 @@
 const { studentModel } = require("../Models/student.model.js");
+const { ApiError } = require("../Utils/ApiError.utils.js");
+const { ApiResponse } = require("../Utils/ApiResponse.utils.js");
 
 const viewStudents = async (req, res) => {
   const { branch, academicYear, specialization } = req.body;
@@ -20,6 +22,38 @@ const viewStudents = async (req, res) => {
   }
 };
 
+const updateStudent = async (req, res) => {
+  const { rollNo, ...updateFields } = req.body;
+
+  if (!rollNo) {
+    throw new ApiError(400, "Roll Number is required");
+  }
+
+  // Remove undefined fields
+  Object.keys(updateFields).forEach(
+    (key) => updateFields[key] === undefined && delete updateFields[key]
+  );
+
+  // Convert dateOfBirth to Date object if it exists
+  if (updateFields.dateOfBirth) {
+    updateFields.dateOfBirth = new Date(updateFields.dateOfBirth);
+  }
+
+  const updatedStudent = await studentModel.findOneAndUpdate(
+    { rollNo: rollNo },
+    { $set: updateFields },
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedStudent) {
+    throw new ApiError(404, "Student not found");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Student updated successfully", updatedStudent));
+};
+
 // Delete students based on rollNos provided in the array from frontend
 const deleteStudents = async (req, res) => {
   const { rollNos } = req.body;
@@ -36,4 +70,4 @@ const deleteStudents = async (req, res) => {
   }
 };
 
-module.exports = { viewStudents, deleteStudents };
+module.exports = { viewStudents, deleteStudents, updateStudent };

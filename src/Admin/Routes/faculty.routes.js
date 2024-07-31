@@ -1,7 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const { verifyJWTFaculty } = require("../Middleware/auth.middleware.js");
-const { viewFaculty, deleteFaculty } = require("../Controllers/viewFaculty.js");
+const {
+  viewFaculty,
+  deleteFaculty,
+  updateFaculty,
+} = require("../Controllers/viewFaculty.js");
 
 const { viewSubjects } = require("../Controllers/subject.controller.js");
 
@@ -27,6 +31,7 @@ router.route("/logout").post(verifyJWTFaculty, logoutFaculty);
 router.route("/refreshtoken").post(refreshAccessToken);
 router.route("/viewFaculty").get(viewFaculty);
 router.route("/deleteFaculty").delete(deleteFaculty);
+router.route("/updatefaculty").patch(updateFaculty);
 router.route("/viewsubjects").post(viewSubjects);
 
 module.exports = router;

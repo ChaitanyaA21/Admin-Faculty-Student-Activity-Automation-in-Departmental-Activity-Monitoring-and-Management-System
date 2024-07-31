@@ -13,10 +13,34 @@ const viewFaculty = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, "Faculties retrieved successfully", faculties));
 });
+const updateFaculty = asyncHandler(async (req, res) => {
+  const { facultyId, ...updateFields } = req.body;
+
+  if (!facultyId) {
+    throw new ApiError(400, "Faculty ID is required");
+  }
+
+  Object.keys(updateFields).forEach(
+    (key) => updateFields[key] === undefined && delete updateFields[key]
+  );
+
+  const updatedFaculty = await facultyModel.findOneAndUpdate(
+    { facultyId: facultyId },
+    { $set: updateFields },
+    { new: true, runValidators: true }
+  );
+
+  if (!updatedFaculty) {
+    throw new ApiError(404, "Faculty not found");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Faculty updated successfully", updatedFaculty));
+});
 
 const deleteFaculty = asyncHandler(async (req, res) => {
   const { facultyIds } = req.body;
-  console.log(req.body);
 
   if (!Array.isArray(facultyIds) || facultyIds.length === 0) {
     throw new ApiError(400, "Invalid faculty IDs array");
@@ -35,4 +59,4 @@ const deleteFaculty = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, "Faculties deleted successfully", result));
 });
 
-module.exports = { viewFaculty, deleteFaculty };
+module.exports = { viewFaculty, deleteFaculty, updateFaculty };

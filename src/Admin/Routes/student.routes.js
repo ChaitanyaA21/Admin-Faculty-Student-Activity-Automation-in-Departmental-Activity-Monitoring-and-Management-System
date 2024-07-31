@@ -9,6 +9,7 @@ const {
 const {
   viewStudents,
   deleteStudents,
+  updateStudent,
 } = require("../Controllers/viewStudents.js");
 const {
   loginStudent,
@@ -28,5 +29,6 @@ router.route("/refreshtoken").post(refreshAccessToken);
 router.route("/viewstudents").post(viewStudents);
 router.route("/deletestudents").delete(deleteStudents);
 router.route("/getstudents").post(getStudentDetails);
+router.route("/updatestudent").patch(updateStudent);
 
 module.exports = router;
