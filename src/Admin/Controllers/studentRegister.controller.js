@@ -34,7 +34,6 @@ function rollnoGenerator(studentData) {
       let fourDigitNumber = i.toString().padStart(4, "0");
       let t = rollNo;
       t = t + fourDigitNumber;
-      console.log(t);
 
       studentData[i - 1]["rollNo"] = t;
     }
@@ -46,87 +45,79 @@ function rollnoGenerator(studentData) {
 //Student registration
 const registerStudent = async (req, res) => {
   if (req.body.addFile) {
-    //Student registration-2
-    //Student registration using a excel file
-    //To Do's
-    //Retrieve the data from frontend
-    const workbook = await XLSX.read(fs.readFileSync(req.file.path));
+    try {
+      //Student registration-2
+      //Student registration using a excel file
+      //To Do's
+      //Retrieve the data from frontend
+      const workbook = await XLSX.read(fs.readFileSync(req.file.path));
 
-    let worksheets = {};
-    //Segregation of data obatianed from Excel
-    for (const sheetName of workbook.SheetNames) {
-      worksheets[sheetName] = XLSX.utils.sheet_to_json(
-        workbook.Sheets[sheetName]
-      );
-    }
-
-    //Validation-no empty fields for required fields(if found send back an error of correction request)
-    worksheets.Sheet1.forEach((object) => {
-      for (const key in object) {
-        if (object[key].toString().trim() === "") {
-          throw new ApiError(
-            400,
-            `${object["firstname"]} has some missing details`
-          );
-        }
+      let worksheets = {};
+      //Segregation of data obatianed from Excel
+      for (const sheetName of workbook.SheetNames) {
+        worksheets[sheetName] = XLSX.utils.sheet_to_json(
+          workbook.Sheets[sheetName]
+        );
       }
-    });
 
-    //Sort them according to surname(Separate name into first name and last name so that sorting on surnames can be done)
-
-    let data = await worksheets.Sheet1.sort(compare);
-    data.forEach((element) => {
-      console.log(element.firstname);
-    }); //have to test this sorting
-    //Generate roll no's
-    rollnoGenerator(data);
-    console.log("After RollNo Generator");
-    data.forEach((object) => {
-      console.log(object);
-    });
-
-    //create and save the student login details as a whole
-    const studentpassword = process.env.STUDENT_PASSWORD;
-    for (let index = 0; index < data.length; index++) {
-      const student = await studentModel.create({
-        rollNo: data[index].rollNo,
-        firstname: data[index].firstname,
-        lastname: data[index].lastname,
-        email: data[index].email,
-        phoneNo: data[index].phoneNo,
-        aadharNo: data[index].aadharNo,
-        motherName: data[index].motherName,
-        fatherName: data[index].fatherName,
-        parentNo: data[index].parentNo,
-        dateOfBirth: data[index].dateOfBirth,
-        permanentAddress: data[index].permanentAddress,
-        presentAddress: data[index].presentAddress,
-        bloodGroup: data[index].bloodGroup,
-        caste: data[index].caste,
-        religion: data[index].religion,
-        branch: data[index].branch,
-        specialization: data[index].specialization,
-        // semNumber.$[0].subjects.subjectName:"CPDS"
-        semNumber: [
-          {
-            semNo: 1,
-            subjects: {
-              CPDS: {
-                subjectName: "CPDS",
-              },
-            },
-          },
-        ],
+      //Validation-no empty fields for required fields(if found send back an error of correction request)
+      worksheets.Sheet1.forEach((object) => {
+        for (const key in object) {
+          if (object[key].toString().trim() === "") {
+            throw new ApiError(
+              400,
+              `${object["firstname"]} has some missing details`
+            );
+          }
+        }
       });
-      await studentLogin.create({
-        rollNo: student.rollNo,
-        password: studentpassword,
-      });
+
+      //Sort them according to surname(Separate name into first name and last name so that sorting on surnames can be done)
+
+      let data = await worksheets.Sheet1.sort(compare);
+
+      //Generate roll no's
+      rollnoGenerator(data);
+
+      //create and save the student login details as a whole
+      const studentpassword = process.env.STUDENT_PASSWORD;
+      for (let index = 0; index < data.length; index++) {
+        const student = await studentModel.create({
+          rollNo: data[index].rollNo,
+          firstname: data[index].firstname,
+          lastname: data[index].lastname,
+          email: data[index].email,
+          phoneNo: data[index].phoneNo,
+          aadharNo: data[index].aadharNo,
+          motherName: data[index].motherName,
+          fatherName: data[index].fatherName,
+          parentNo: data[index].parentNo,
+          dateOfBirth: data[index].dateOfBirth,
+          permanentAddress: data[index].permanentAddress,
+          presentAddress: data[index].presentAddress,
+          bloodGroup: data[index].bloodGroup,
+          caste: data[index].caste,
+          religion: data[index].religion,
+          branch: data[index].branch,
+          specialization: data[index].specialization,
+          academicYear: data[index].academicYear,
+        });
+        await studentLogin.create({
+          rollNo: student.rollNo,
+          password: studentpassword,
+        });
+      }
+      return res
+        .status(201)
+        .json(new ApiResponse(200, true, "User registered Successfully"));
+    } catch {
+      throw new ApiError(
+        500,
+        error?.message || "Error in registering student Details"
+      );
+    } finally {
+      fs.unlinkSync(req.file.path);
     }
-
-    return res
-      .status(201)
-      .json(new ApiResponse(200, true, "User registered Successfully"));
   } else {
     //take details from frontend for adding single student
     const {
@@ -147,7 +138,7 @@ const registerStudent = async (req, res) => {
       religion,
       branch,
       specialization,
-      semNumber,
+      academicYear,
     } = req.body;
 
     //check whether all the details are present
@@ -168,8 +159,7 @@ const registerStudent = async (req, res) => {
       caste,
       religion,
       branch,
-      specialization,
-      semNumber,
+      academicYear,
     ].some((field) => String(field).trim() === "");
     if (detailsCheck) {
       console.log("The fileds are emptyy.Fill All the fileds");
@@ -213,6 +203,7 @@ const registerStudent = async (req, res) => {
       religion,
       branch,
       specialization,
+      academicYear,
     });
     await studentData.save();
 

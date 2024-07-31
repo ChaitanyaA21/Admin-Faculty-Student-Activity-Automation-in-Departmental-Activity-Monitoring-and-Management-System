@@ -4,15 +4,21 @@ const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 
 const checkProfile = asyncHandler(async (req, res) => {
-  const user = await facultyModel
-    .findOne({ facultyId: req.user?.facultyId })
-    .select("-semNumber");
+  const faculty = await facultyModel.findOne({ facultyId: req.user.facultyId });
 
-  if (!user) {
-    throw new ApiError(400, "User details not found");
+  if (!faculty) {
+    throw new ApiError(400, "Faculty details not found");
   }
 
-  res.status(200).json(new ApiResponse(200, user, "Successfull"));
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        data: faculty,
+      },
+      "Successfull"
+    )
+  );
 });
 
 module.exports = { checkProfile };
