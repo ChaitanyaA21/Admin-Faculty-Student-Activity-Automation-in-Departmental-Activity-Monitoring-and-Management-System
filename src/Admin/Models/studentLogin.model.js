@@ -33,7 +33,7 @@ studentLoginSchema.methods.generateAccessToken = function () {
   return jwt.sign(
     {
       _id: this._id,
-      rollno: this.rollno,
+      rollNo: this.rollNo,
     },
     process.env.ACCESS_TOKEN_SECRET,
     {

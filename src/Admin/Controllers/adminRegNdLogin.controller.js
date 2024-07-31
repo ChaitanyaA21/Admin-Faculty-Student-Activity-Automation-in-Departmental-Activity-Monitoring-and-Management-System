@@ -157,7 +157,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 const registerAdmin = async (req, res) => {
   const adminId = "A2024";
-  const password = "*******";
+  const password = process.env.ADMIN_PASSWORD;
   //Save the admin details in the db
   const adminData = new adminModel({
     adminId,

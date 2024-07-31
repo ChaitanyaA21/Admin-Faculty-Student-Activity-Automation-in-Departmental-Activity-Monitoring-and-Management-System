@@ -53,5 +53,16 @@ facultyLoginSchema.methods.generateRefreshToken = function () {
     }
   );
 };
+facultyLoginSchema.methods.generateResetToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.RESET_TOKEN_SECRET,
+    {
+      expiresIn: process.env.RESET_TOKEN_EXPIRY,
+    }
+  );
+};
 const facultyLogin = mongoose.model("facultyLogin", facultyLoginSchema);
 module.exports = { facultyLogin };

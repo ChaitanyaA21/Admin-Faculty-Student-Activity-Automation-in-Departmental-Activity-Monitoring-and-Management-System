@@ -163,8 +163,6 @@ const registerStudent = async (req, res) => {
     ].some((field) => String(field).trim() === "");
     if (detailsCheck) {
       console.log("The fileds are emptyy.Fill All the fileds");
-    } else {
-      console.log("All the details are Entered");
     }
     //check whether already user exists or not:email,rollno
     //Two cases must me considered
@@ -172,7 +170,6 @@ const registerStudent = async (req, res) => {
     //2-->just checking for Existing rollno
     var userCheck;
     try {
-      console.log("Checking user...");
       userCheck = await studentModel.findOne({ rollNo: rollNo });
     } catch (error) {
       console.log("Error : in finding the existance of the user in db", error);
@@ -184,7 +181,6 @@ const registerStudent = async (req, res) => {
     }
     //create user if doesn't exist
     //Type-1 of creating user
-    console.log("Storing student details");
     const studentData = new studentModel({
       rollNo,
       firstname,
@@ -212,17 +208,40 @@ const registerStudent = async (req, res) => {
       rollNo: rollNo,
       password: studentpassword,
     });
-    console.log("Stored student details");
     //Type-2 of creating user
 
     //instead of .save use .create()
     // await studentModel.create(studentData)
     // return response
     // return studentData
-    console.log("Returning the status");
     const response = new ApiResponse(200, studentData);
     res.status(response.statusCode).json(response);
   }
 };
 
-module.exports = registerStudent;
+const getStudentDetails = async (req, res) => {
+  let { branch, academicYear, specialization } = req.body;
+
+  let query = {};
+  if (!branch || (!academicYear && !specialization)) {
+    throw new ApiError(404, "Details not provided");
+  }
+
+  academicYear = Number(academicYear);
+  query.branch = branch;
+  query.academicYear = Number(academicYear);
+
+  if (specialization) {
+    query.specialization = specialization;
+  }
+
+  const result = await studentModel.find(query, {
+    rollNo: 1,
+    firstname: 1,
+    lastname: 1,
+  });
+
+  res.status(200).json(new ApiResponse(200, result, "Successful"));
+};
+
+module.exports = { registerStudent, getStudentDetails };

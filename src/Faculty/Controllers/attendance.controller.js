@@ -4,40 +4,57 @@ const {
 const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 const { ApiError } = require("../../Admin/Utils/ApiError.utils.js");
-const updateAttendance = async (req, res) => {
-  const { studentRollNos, subjectName } = req.body;
 
-  const currentDate = new Date();
+const updateAttendance = asyncHandler(async (req, res) => {
+  const { presentRollNos, absentRollNos, subjectName, semNo } = req.body;
 
-  for (const rollNo of studentRollNos) {
-    await marksAndAttendanceModel.findOneAndUpdate(
+  const currentDate = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`;
+
+  let result = [];
+
+  for (const rollNo of presentRollNos) {
+    const result1 = await marksAndAttendanceModel.findOneAndUpdate(
+
       {
         rollNo: rollNo,
         subjectName,
       },
       {
         $push: {
-          attendance: currentDate,
+          present: currentDate,
         },
       },
-
       {
         new: true,
         upsert: true,
-        runValidators: false,
+        runValidators: true,
       }
     );
-    console.log("Attendance updated with current date for rollno:", rollNo);
+    result.push(result1);
   }
-  res.status(200).json(
-    new ApiResponse(
-      200,
+
+  for (const rollNo of absentRollNos) {
+    const result2 = await marksAndAttendanceModel.findOneAndUpdate(
       {
-        message: "successful",
+        rollNo: rollNo,
+        subjectName,
       },
-      "successful"
-    )
-  );
-};
+      {
+        $push: {
+          absent: currentDate,
+        },
+      },
+      {
+        new: true,
+        upsert: true,
+        runValidators: true,
+      }
+    );
+    result.push(result2);
+  }
+
+  res.status(200).json(new ApiResponse(200, result, "successful"));
+});
+
 
 module.exports = { updateAttendance };

@@ -29,11 +29,12 @@ const marksAndAttendanceSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    attendance: [
-      {
-        type: String,
-      },
-    ],
+    present: {
+      type: [String],
+    },
+    absent: {
+      type: [String],
+    },
     internal: [marksSchema],
   },
   { timestamps: true }
