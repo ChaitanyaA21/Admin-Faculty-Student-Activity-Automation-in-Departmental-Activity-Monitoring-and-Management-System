@@ -14,6 +14,7 @@ const updateAttendance = asyncHandler(async (req, res) => {
 
   for (const rollNo of presentRollNos) {
     const result1 = await marksAndAttendanceModel.findOneAndUpdate(
+
       {
         rollNo: rollNo,
         subjectName,
@@ -54,5 +55,6 @@ const updateAttendance = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, result, "successful"));
 });
+
 
 module.exports = { updateAttendance };
