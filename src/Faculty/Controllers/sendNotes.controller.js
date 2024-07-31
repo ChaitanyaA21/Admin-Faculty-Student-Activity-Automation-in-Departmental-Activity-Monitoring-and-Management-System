@@ -1,8 +1,8 @@
-const { asyncHandler } = require("../utils/asyncHandler.utils");
-const { ApiError } = require("../utils/ApiError");
-const { ApiResponse } = require("../utils/ApiResponse");
-const { uploadOnCloudinary } = require("../utils/cloudinary");
-const SendNotes = require("../models/SendNotes");
+const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
+const { ApiError } = require("../../Admin/Utils/ApiError.utils.js");
+const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
+const { uploadOnCloudinary } = require("../../Admin/Utils/cloudinary.utils.js");
+const SendNotes = require("../../Admin/Models/sendNotes.model.js");
 
 const sendNotes = asyncHandler(async (req, res) => {
   const { subjectName, subjectId, title } = req.body;

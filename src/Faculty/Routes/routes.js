@@ -11,11 +11,14 @@ const {
 } = require("../Controllers/updatePassword.controller.js");
 const { updateContact } = require("../Controllers/updateContact.controller.js");
 const { sendNotes } = require("../Controllers/sendNotes.controller.js");
+const { createLessonPlan } = require("../Controllers/lessonPlan.controller.js");
 
 router.route("/attendance").post(updateAttendance);
 router.route("/internalmarks").post(updateInternalMarks);
 router.route("/checkprofile").get(checkProfile);
 router.route("/password").patch(updatePassword);
 router.route("/contact").patch(updateContact);
-router.route("/sendnotes").post(upload.single("file"), sendNotes);
+router.route("/sendnotes").post(sendNotes);
+router.route("/lessonplan").post(createLessonPlan);
+
 module.exports = router;
