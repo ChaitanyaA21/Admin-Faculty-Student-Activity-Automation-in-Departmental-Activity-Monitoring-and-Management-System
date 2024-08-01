@@ -90,6 +90,8 @@ const getSubjects = asyncHandler(async (req, res) => {
       academicYear: 1,
       subjectName: 1,
       semNo: 1,
+      subjectId: 1,
+      _id: 0,
     };
   } else if (req.userDetails) {
     query = {
@@ -99,6 +101,7 @@ const getSubjects = asyncHandler(async (req, res) => {
     };
     resultFilter = {
       subjectName: 1,
+      subjectId: 1,
       _id: 0,
     };
     if (req.userDetails?.specialization) {
