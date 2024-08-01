@@ -10,7 +10,7 @@ const {
   viewStudents,
   deleteStudents,
   updateStudent,
-} = require("../Controllers/viewStudents.js");
+} = require("../Controllers/viewStudents.controller.js");
 const {
   loginStudent,
   logoutStudent,

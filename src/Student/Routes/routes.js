@@ -26,6 +26,9 @@ const {
   viewNotifications,
   readNotification,
 } = require("../../Admin/Controllers/notification.controller.js");
+const {
+  viewFaculty,
+} = require("../../Admin/Controllers/viewFaculty.controller.js");
 
 // routes
 
@@ -42,5 +45,7 @@ router.route("/notifications").get(viewNotifications);
 router.route("/create-notifications/:type").post(createNotification);
 router.route("/delete-notifications").delete(deleteNotification);
 router.route("/set-read-notifications").patch(readNotification);
+
+router.route("/viewFaculty").get(viewFaculty);
 
 module.exports = router;
