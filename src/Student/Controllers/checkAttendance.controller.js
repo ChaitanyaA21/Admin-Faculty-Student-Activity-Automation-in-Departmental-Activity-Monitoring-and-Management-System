@@ -8,6 +8,10 @@ const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 const checkAttendance = asyncHandler(async (req, res) => {
   const { subjectName } = req.body;
 
+  if (!subjectName) {
+    throw new ApiError(404, "Client Error: Subject Name not provided");
+  }
+
   const attendance = await marksAndAttendanceModel.findOne(
     {
       rollNo: req.user?.rollNo,

@@ -6,6 +6,7 @@ const { facultyLogin } = require("../Models/facultyLogin.model.js");
 const jwt = require("jsonwebtoken");
 const { adminModel } = require("../Models/adminDetails.model.js");
 const { studentModel } = require("../Models/student.model.js");
+const { facultyModel } = require("../Models/faculty.model.js");
 
 const verifyJWT = asyncHandler(async (req, _, next) => {
   try {
@@ -56,6 +57,10 @@ const verifyJWTFaculty = asyncHandler(async (req, _, next) => {
     throw new ApiError(401, "Invalid Access Token");
   }
 
+  const facultyDetails = await facultyModel.findOne({
+    facultyId: decodedToken?.facultyId,
+  });
+  req.userDetails = facultyDetails;
   req.user = user;
   next();
 });
