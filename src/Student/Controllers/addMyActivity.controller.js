@@ -60,6 +60,11 @@ const addMyActivity = asyncHandler(async (req, res) => {
         } else if (req.user.facultyId) {
           userId = req.user.facultyId;
         }
+
+        data = {
+          ...data,
+          userId,
+        };
         record = await workShop.create(data);
       } else if (type === "curricular-activities" && req.user.rollNo) {
         data.rollNo = req.user.rollNo;
@@ -121,4 +126,60 @@ const addMyActivity = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, result, "Successful"));
 });
 
-module.exports = { addMyActivity };
+const viewActivity = asyncHandler(async (req, res) => {
+  let query = {};
+
+  const { type } = req.params;
+
+  if (type === "workshop" && req.user?.rollNo) {
+    query.userId = req.user.rollNo;
+  } else if (type === "workshop" && req.user?.facultyId) {
+    query.userId = req.user.facultyId;
+  } else if (type) {
+    query.rollNo = req.user.rollNo;
+  } else {
+    throw new ApiError(404, "Client Error: Wrong User");
+  }
+
+  let result;
+  if (type === "workshop") result = await workShop.findOne(query);
+  else if (type === "internship") result = await internship.findOne(query);
+  else if (type === "curricular-activities")
+    result = await curricularActivities.findOne(query);
+  else if (type === "project") result = await project.findOne(query);
+
+  if (!result)
+    throw new ApiError(500, "Internal Server Error: No details found");
+
+  res.status(200).json(new ApiResponse(200, result, "Successful"));
+});
+
+const deleteActivity = asyncHandler(async (req, res) => {
+  let query = {};
+
+  const { type } = req.params;
+
+  if (type === "workshop" && req.user?.rollNo) {
+    query.userId = req.user.rollNo;
+  } else if (type === "workshop" && req.user?.facultyId) {
+    query.userId = req.user.facultyId;
+  } else if (type) {
+    query.rollNo = req.user.rollNo;
+  } else {
+    throw new ApiError(404, "Client Error: Wrong User");
+  }
+
+  let result;
+  if (type === "workshop") result = await workShop.deleteOne(query);
+  else if (type === "internship") result = await internship.deleteOne(query);
+  else if (type === "curricular-activities")
+    result = await curricularActivities.deleteOne(query);
+  else if (type === "project") result = await project.deleteOne(query);
+
+  if (!result.deletedCount)
+    throw new ApiError(500, "Internal Server Error: No details found");
+
+  res.status(200).json(new ApiResponse(200, result, "Successful"));
+});
+
+module.exports = { addMyActivity, viewActivity, deleteActivity };
