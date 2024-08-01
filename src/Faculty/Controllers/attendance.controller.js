@@ -1,63 +1,60 @@
-const { studentModel } = require("../../Admin/Models/student.model.js");
+const {
+  marksAndAttendanceModel,
+} = require("../../Admin/Models/marksAndAttendance.model.js");
 const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 const { ApiError } = require("../../Admin/Utils/ApiError.utils.js");
-const updateAttendance = async (req, res) => {
-  const currentDate = new Date();
 
-  const { studentRollNo, semNo, subjectName } = req.body;
+const updateAttendance = asyncHandler(async (req, res) => {
+  const { presentRollNos, absentRollNos, subjectName, semNo } = req.body;
 
-  for (let rollNo of studentRollNo) {
-    await studentModel.findOneAndUpdate(
+  const currentDate = `${new Date().getDate()}-${new Date().getMonth()}-${new Date().getFullYear()}`;
+
+  let result = [];
+
+  for (const rollNo of presentRollNos) {
+    const result1 = await marksAndAttendanceModel.findOneAndUpdate(
+
       {
         rollNo: rollNo,
-        "semNumber.semNo": semNo,
-        [`semNumber.subjects.${subjectName}.subjectName`]: subjectName,
+        subjectName,
       },
       {
         $push: {
-          [`semNumber.$[semIndex].subjects.${subjectName}.attendance`]:
-            currentDate,
+          present: currentDate,
         },
       },
-
       {
         new: true,
-        arrayFilters: [{ "semIndex.semNo": semNo }],
+        upsert: true,
+        runValidators: true,
       }
     );
-    console.log("Attendance updated with current date for rollno:", rollNo);
+    result.push(result1);
   }
-  res.status(200).json(
-    new ApiResponse(
-      200,
+
+  for (const rollNo of absentRollNos) {
+    const result2 = await marksAndAttendanceModel.findOneAndUpdate(
       {
-        message: "successful",
+        rollNo: rollNo,
+        subjectName,
       },
-      "successful"
-    )
-  );
-};
+      {
+        $push: {
+          absent: currentDate,
+        },
+      },
+      {
+        new: true,
+        upsert: true,
+        runValidators: true,
+      }
+    );
+    result.push(result2);
+  }
+
+  res.status(200).json(new ApiResponse(200, result, "successful"));
+});
+
 
 module.exports = { updateAttendance };
-
-// const addAttendance = async(studentRollNumbers)=>{
-//     const today = new Date();
-
-//     studentModel.updateOne(
-//         {}
-//     )
-
-// }
-
-// // Ensure date-fns is included in your project
-// const { format } = require('date-fns');
-
-// // Current date
-// const today = new Date();
-
-// // Formatted date (YYYY-MM-DD)
-// console.log(format(today, 'yyyy-MM-dd'));  // e.g., 2024-06-06
-
-// // Formatted date (DD/MM/YYYY)
-// console.log(format(today, 'dd/MM/yyyy'));  // e.g., 06/06/2024

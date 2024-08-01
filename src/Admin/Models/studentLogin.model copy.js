@@ -2,22 +2,25 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const studentLoginSchema = mongoose.Schema({
-  rollNo: {
-    type: String,
-    required: true,
+const studentLoginSchema = mongoose.Schema(
+  {
+    rollNo: {
+      type: String,
+      required: true,
+    },
+    password: {
+      type: String,
+      required: true,
+    },
+    refreshToken: {
+      type: String,
+    },
+    resetToken: {
+      type: String,
+    },
   },
-  password: {
-    type: String,
-    required: true,
-  },
-  refreshToken: {
-    type: String,
-  },
-  resetToken: {
-    type: String,
-  },
-});
+  { timestamps: true }
+);
 
 studentLoginSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();

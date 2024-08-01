@@ -11,6 +11,9 @@ const {
   verifyJWT,
   verifyJWTFaculty,
 } = require("./Admin/Middleware/auth.middleware.js");
+
+const uploadRoute = require("./Admin/Routes/files.routes.js");
+
 const PORT = process.env.PORT || 5000;
 
 // const subjectObj=require("./Admin/Models/subject.model")
@@ -28,6 +31,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 //import admin routes
+const adminLogin = require("./Admin/Routes/admin.routes.js");
 const passwordRouter = require("./Admin/Routes/password.routes.js");
 const studentRegistrationRouter = require("./Admin/Routes/student.routes.js");
 const facultyRegistrationRouter = require("./Admin/Routes/faculty.routes.js");
@@ -39,6 +43,7 @@ const facultyRouter = require("./Faculty/Routes/routes.js");
 const studentRouter = require("./Student/Routes/routes.js");
 
 //Routes DeClaration
+app.use("/api/v2", adminLogin);
 app.use("/api/v2/password", passwordRouter);
 app.use("/api/v2/student", studentRegistrationRouter);
 app.use("/api/v2/faculty", facultyRegistrationRouter);
@@ -52,6 +57,9 @@ app.use("/api/v2/faculty/login", [verifyJWTFaculty, facultyRouter]);
 //student routes declaration
 
 app.use("/api/v2/student/login", [verifyJWT, studentRouter]);
+
+//forms router
+app.use("/api/v2", uploadRoute);
 
 //Server and DataBase connection
 const start = async () => {
