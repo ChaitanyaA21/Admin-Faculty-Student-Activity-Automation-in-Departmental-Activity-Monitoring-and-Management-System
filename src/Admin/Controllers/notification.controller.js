@@ -8,9 +8,9 @@ const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 
 const viewNotifications = asyncHandler(async (req, res) => {
   let query = {};
-  if (req.user.rollNo) {
+  if (req.user?.rollNo) {
     query.toUserId = req.user.rollNo;
-  } else if (req.user.facultyId) {
+  } else if (req.user?.facultyId) {
     query.toUserId = req.user.facultyId;
   } else {
     query.toUserId = process.env.ADMIN_ID;
