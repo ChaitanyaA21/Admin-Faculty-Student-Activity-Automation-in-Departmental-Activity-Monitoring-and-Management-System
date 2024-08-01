@@ -7,18 +7,35 @@ const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 // use viewFaculty in viewFaculty.controller.js
 
 const viewNotifications = asyncHandler(async (req, res) => {
-  const { type } = req.params;
-
   let query = {};
   if (req.user.rollNo) {
     query.toUserId = req.user.rollNo;
   } else if (req.user.facultyId) {
     query.toUserId = req.user.facultyId;
-  } else if (type === "admin") {
+  } else {
     query.toUserId = process.env.ADMIN_ID;
   }
 
   const result = await notification.find(query, { toUserId: 0 });
+
+  if (!result) {
+    throw new ApiError(500, "Internal Server Error: No Notifications found");
+  }
+
+  res.status(200).json(new ApiResponse(200, result, "Successful"));
+});
+
+const viewSentNotifications = asyncHandler(async (req, res) => {
+  let query = {};
+  if (req.user.rollNo) {
+    query.from = req.user.rollNo;
+  } else if (req.user.facultyId) {
+    query.from = req.user.facultyId;
+  } else if (type === "admin") {
+    query.from = process.env.ADMIN_ID;
+  }
+
+  const result = await notification.find(query, { from: 0 });
 
   if (!result) {
     throw new ApiError(500, "Internal Server Error: No Notifications found");
