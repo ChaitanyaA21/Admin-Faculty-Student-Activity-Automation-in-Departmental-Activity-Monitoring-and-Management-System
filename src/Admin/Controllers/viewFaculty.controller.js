@@ -1,3 +1,4 @@
+const { subject } = require("../Models/subject.model.js");
 const { facultyModel } = require("../Models/faculty.model.js");
 const { asyncHandler } = require("../Utils/asyncHandler.utils.js");
 const { ApiError } = require("../Utils/ApiError.utils.js");
@@ -6,15 +7,45 @@ const { ApiResponse } = require("../Utils/ApiResponse.utils.js");
 // View all faculty details
 const viewFaculty = asyncHandler(async (req, res) => {
   if (req.user?.rollNo) {
+    let query = {
+      branch: req.userDetails.branch,
+      academicYear: req.userDetails.academicYear,
+      semNo: req.userDetails.semNo,
+    };
+    if (req.userDetails.specialization) {
+      query.specialization = req.userDetails.specialization;
+    }
+    const facultyIds = await subject.find(query, { facultyId: 1 });
+
+    if (!facultyIds) {
+      throw new ApiError(500, "Internal Server Error: Faculty Not Found");
+    }
+
+    let facultys = [];
+    for (let i = 0; i < facultyIds.length; i++) {
+      const faculty = await facultyModel.findOne(
+        { facultyId: facultyIds[i].facultyId },
+        {
+          facultyId: 1,
+          firstname: 1,
+          lastname: 1,
+        }
+      );
+      facultys.push(faculty);
+    }
+
+    return res.status(200).json(new ApiResponse(200, facultys, "Successful"));
   } else {
     const faculties = await facultyModel.find({});
     if (!faculties) {
       throw new ApiError(404, "No faculty found");
     }
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Faculties retrieved successfully", faculties)
+      );
   }
-  res
-    .status(200)
-    .json(new ApiResponse(200, "Faculties retrieved successfully", faculties));
 });
 
 const updateFaculty = asyncHandler(async (req, res) => {
