@@ -1,47 +1,5 @@
 const mongoose = require("mongoose");
 
-const marksSchema = mongoose.Schema({
-  marks: {
-    type: Number,
-    default: 0,
-  },
-  assignment: {
-    type: Number,
-    default: 0,
-  },
-  presentation: {
-    type: Number,
-    default: 0,
-  },
-});
-const internalMarksSchema = mongoose.Schema({
-  internalOne: marksSchema,
-  internalTwo: marksSchema,
-});
-
-const subjectSchema = mongoose.Schema({
-  subjectName: {
-    type: String,
-    //Will be uncommented after writing subject schema separately
-    // required:true
-  },
-  marks: internalMarksSchema,
-  attendance: [
-    {
-      type: Date,
-    },
-  ],
-});
-const semesterSchema = mongoose.Schema({
-  semNo: {
-    type: Number,
-    default: 1,
-  },
-  subjects: {
-    type: Map,
-    of: subjectSchema,
-  },
-});
 const studentSchema = mongoose.Schema(
   {
     rollNo: {
@@ -111,10 +69,18 @@ const studentSchema = mongoose.Schema(
     specialization: {
       type: String,
     },
-    semNumber: [semesterSchema],
+    semNo: {
+      type: Number,
+      default: 1,
+    },
+
     reRegistered: {
       type: Boolean,
       default: false,
+    },
+    academicYear: {
+      type: Number,
+      required: true,
     },
   },
   { timestamps: true }

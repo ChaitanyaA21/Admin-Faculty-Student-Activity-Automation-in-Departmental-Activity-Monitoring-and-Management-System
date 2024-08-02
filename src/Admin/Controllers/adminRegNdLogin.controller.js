@@ -1,19 +1,19 @@
 const { asyncHandler } = require("../Utils/asyncHandler.utils.js");
 const { ApiError } = require("../Utils/ApiError.utils.js");
 const { ApiResponse } = require("../Utils/ApiResponse.utils.js");
-const { facultyLogin } = require("../Models/facultyLogin.model.js");
+const { adminModel } = require("../Models/adminDetails.model.js");
 const jwt = require("jsonwebtoken");
 const mongoose = require("mongoose");
 
-const generateAccessAndRefreshTokens = async (facultyId) => {
+const generateAccessAndRefreshTokens = async (adminId) => {
   try {
-    const faculty = await facultyLogin.findById(facultyId);
+    const admin = await adminModel.findById(adminId);
 
-    const accessToken = faculty.generateAccessToken();
-    const refreshToken = faculty.generateRefreshToken();
+    const accessToken = admin.generateAccessToken();
+    const refreshToken = admin.generateRefreshToken();
 
-    faculty.refreshToken = refreshToken;
-    await faculty.save({ validateBeforeSave: false });
+    admin.refreshToken = refreshToken;
+    await admin.save({ validateBeforeSave: false });
 
     return { accessToken, refreshToken };
   } catch (error) {
@@ -24,25 +24,25 @@ const generateAccessAndRefreshTokens = async (facultyId) => {
   }
 };
 
-const loginFaculty = asyncHandler(async (req, res) => {
+const loginAdmin = asyncHandler(async (req, res) => {
   // TO DOS
   // req body -> data
 
-  const { facultyId, password } = req.body;
+  const { adminId, password } = req.body;
 
-  if (!facultyId) {
-    throw new ApiError(400, "facultyId is required");
+  if (!adminId) {
+    throw new ApiError(400, "adminId is required");
   }
 
   // find the user
-  const faculty = await facultyLogin.findOne({ facultyId: facultyId });
+  const admin = await adminModel.findOne({ adminId });
 
-  if (!faculty) {
-    throw new ApiError(404, "faculty does not exist with this facultyId");
+  if (!admin) {
+    throw new ApiError(404, "Admin does not exist with this AdminId");
   }
 
   // password check
-  const isPasswordValid = await faculty.isPasswordCorrect(password);
+  const isPasswordValid = await admin.isPasswordCorrect(password);
 
   if (!isPasswordValid) {
     throw new ApiError(401, "Invalid user Credentials");
@@ -51,11 +51,11 @@ const loginFaculty = asyncHandler(async (req, res) => {
   // access and refresh token
 
   const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-    faculty._id
+    admin._id
   );
 
-  const loggedInFaculty = await facultyLogin
-    .findById(faculty._id)
+  const loggedInAdmin = await adminModel
+    .findById(admin._id)
     .select("-password -refreshToken");
 
   const options = {
@@ -73,7 +73,7 @@ const loginFaculty = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         {
-          user: loggedInFaculty,
+          user: loggedInAdmin,
           accessToken,
           refreshToken,
         },
@@ -82,8 +82,8 @@ const loginFaculty = asyncHandler(async (req, res) => {
     );
 });
 
-const logoutFaculty = asyncHandler(async (req, res) => {
-  await facultyLogin.findByIdAndUpdate(
+const logoutAdmin = asyncHandler(async (req, res) => {
+  await adminModel.findByIdAndUpdate(
     req.user._id,
     {
       $set: {
@@ -121,13 +121,13 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET
     );
 
-    const faculty = await facultyLogin.findById(decodedToken?._id);
+    const admin = await adminModel.findById(decodedToken?._id);
 
-    if (!faculty) {
+    if (!admin) {
       throw new ApiError(401, "Invalid refresh token");
     }
 
-    if (incomingRefreshToken !== faculty?.refreshToken) {
+    if (incomingRefreshToken !== admin?.refreshToken) {
       throw new ApiError(401, "Refresh token is expired or used");
     }
 
@@ -137,7 +137,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     };
 
     const { accessToken, newrefreshToken } =
-      await generateAccessAndRefreshTokens(faculty._id);
+      await generateAccessAndRefreshTokens(admin._id);
 
     return res
       .status(200)
@@ -155,8 +155,24 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
   }
 });
 
+const registerAdmin = async (req, res) => {
+  const adminId = "A2024";
+  const password = process.env.ADMIN_PASSWORD;
+  //Save the admin details in the db
+  const adminData = new adminModel({
+    adminId,
+    password,
+  });
+  await adminData.save();
+
+  return res
+    .status(201)
+    .json(new ApiResponse(200, true, "Admin Created Successfully"));
+};
+
 module.exports = {
-  loginFaculty,
-  logoutFaculty,
+  registerAdmin,
+  loginAdmin,
+  logoutAdmin,
   refreshAccessToken,
 };

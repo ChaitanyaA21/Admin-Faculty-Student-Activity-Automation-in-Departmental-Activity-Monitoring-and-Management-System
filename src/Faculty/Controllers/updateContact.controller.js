@@ -1,4 +1,4 @@
-const { studentModel } = require("../../Admin/Models/student.model.js");
+const { facultyModel } = require("../../Admin/Models/faculty.model.js");
 const { asyncHandler } = require("../../Admin/Utils/asyncHandler.utils.js");
 const { ApiError } = require("../../Admin/Utils/ApiError.utils.js");
 const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
@@ -12,12 +12,11 @@ const updateContact = asyncHandler(async (req, res) => {
 
   let result1 = null,
     result2 = null;
-
   let updated = "";
   if (newphoneNo) {
-    result1 = await studentModel.findOneAndUpdate(
+    result1 = await facultyModel.findOneAndUpdate(
       {
-        rollNo: req.user?.rollNo,
+        facultyId: req.user.facultyId,
       },
       {
         phoneNo: newphoneNo,
@@ -30,9 +29,9 @@ const updateContact = asyncHandler(async (req, res) => {
     updated += `Phone Number: ${result1.phoneNo}`;
   }
   if (newEmail) {
-    result2 = await studentModel.findOneAndUpdate(
+    result2 = await facultyModel.findOneAndUpdate(
       {
-        rollNo: req.user?.rollNo,
+        facultyId: req.user.facultyId,
       },
       {
         email: newEmail,

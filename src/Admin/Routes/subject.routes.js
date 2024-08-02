@@ -10,7 +10,7 @@ const {
 
 router.route("/addsubject").post(addSubject);
 router.route("/deletesubject").delete(deleteSubjects);
-router.route("/viewsubject").get(viewSubjects);
+router.route("/viewsubject").post(viewSubjects);
 router.route("/updatesubject").patch(updateSubject);
 
 module.exports = router;

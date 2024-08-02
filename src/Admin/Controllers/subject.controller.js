@@ -1,122 +1,112 @@
 const { subject } = require("../Models/subject.model.js");
+const { ApiError } = require("../Utils/ApiError.utils.js");
+const { ApiResponse } = require("../Utils/ApiResponse.utils.js");
+const { asyncHandler } = require("../Utils/asyncHandler.utils.js");
 //add subjects
-const addSubject = async (req, res) => {
-  const { subjectId, subjectName, department } = req.body;
+const addSubject = asyncHandler(async (req, res) => {
+  const {
+    branch,
+    specialization,
+    academicYear,
+    semNo,
+    subjectId,
+    subjectName,
+  } = req.body;
 
-  if (!subjectId || !subjectName) {
-    return res
-      .status(400)
-      .json({ error: "subjectId and subjectName are required" });
+  if (!branch || !academicYear || !semNo || !subjectId || !subjectName) {
+    throw new ApiError(400, "Some details are missing");
   }
 
-  try {
-    const newSubject = new subject({
-      subjectId: subjectId,
-      subjectName: subjectName,
-      department: department,
-    });
+  let data = { branch, academicYear, semNo, subjectId, subjectName };
 
-    await newSubject.save();
-
-    res
-      .status(201)
-      .json({ message: "Subject added successfully", subject: newSubject });
-  } catch (error) {
-    console.error("Error adding subject:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+  if (specialization) {
+    data.specialization = specialization;
   }
-};
+
+  const newSubject = new subject(data);
+
+  await newSubject.save();
+
+  res.status(201).json(new ApiResponse(200, newSubject, "Successful"));
+});
 
 //delete Subjects
-const deleteSubjects = async (req, res) => {
-  const { department, subjectIds } = req.body;
+const deleteSubjects = asyncHandler(async (req, res) => {
+  const { subjectIds } = req.body;
 
-  if (!department || !subjectIds || !Array.isArray(subjectIds)) {
-    return res
-      .status(400)
-      .json({ error: "Department and subjectIds array are required" });
+  if (!subjectIds || !Array.isArray(subjectIds)) {
+    throw new ApiError(404, "Details are not given");
   }
 
-  try {
-    const result = await subject.deleteMany({
-      department: department,
-      subjectId: { $in: subjectIds },
-    });
+  const result = await subject.deleteMany({
+    subjectId: { $in: subjectIds },
+  });
 
-    if (result.deletedCount === 0) {
-      return res.status(404).json({ message: "No subjects found to delete" });
-    }
-
-    res
-      .status(200)
-      .json({ message: "Subjects deleted successfully", result: result });
-  } catch (error) {
-    console.error("Error deleting subjects:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+  if (result.deletedCount === 0) {
+    throw new ApiError(404, "No subjects found to delete");
   }
-};
+
+  res.status(200).json(new ApiResponse(200, result, "Successful"));
+});
 
 //View subjects
 
-const viewSubjects = async (req, res) => {
-  const { department } = req.body;
+const viewSubjects = asyncHandler(async (req, res) => {
+  let { branch, specialization, academicYear, semNo } = req.body;
 
-  if (!department) {
-    return res.status(400).json({ error: "Department is required" });
+  academicYear = Number(academicYear);
+  semNo = Number(semNo);
+  let data = { branch, academicYear, semNo };
+
+  if (specialization) {
+    data.specialization = specialization;
   }
 
-  try {
-    const subjects = await subject.find({ department: department });
+  // Add condition to find subjects with empty facultyId
+  data.facultyId = { $in: [null, ""] };
 
-    if (subjects.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No subjects found for the given department" });
-    }
+  const subjects = await subject.find(data, { _id: 0 });
 
-    res.status(200).json({ subjects: subjects });
-  } catch (error) {
-    console.error("Error fetching subjects:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+  if (subjects.length === 0) {
+    throw new ApiError(
+      404,
+      "No unassigned subjects found for the given details"
+    );
   }
-};
+
+  res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        subjects,
+        "Successfully retrieved unassigned subjects"
+      )
+    );
+});
 
 //Update Subject
 
-const updateSubject = async (req, res) => {
-  const { department, subjectId, newSubjectId, newSubjectName } = req.body;
+const updateSubject = asyncHandler(async (req, res) => {
+  const { oldSubjectId, updatedData } = req.body;
 
-  if (!department || !subjectId) {
-    return res
-      .status(400)
-      .json({ error: "Department and subjectId are required" });
+  if (!updatedData) {
+    throw new ApiError(404, "Update details not given");
   }
 
-  const updateData = {};
-  if (newSubjectId) updateData.subjectId = newSubjectId;
-  if (newSubjectName) updateData.subjectName = newSubjectName;
-
-  try {
-    const updatedSubject = await subject.findOneAndUpdate(
-      { department: department, subjectId: subjectId },
-      { $set: updateData },
+  const updatedSubject = await subject
+    .findOneAndUpdate(
+      { subjectId: oldSubjectId },
+      { $set: updatedData },
       { new: true }
-    );
+    )
+    .select("-_id -__v");
 
-    if (!updatedSubject) {
-      return res.status(404).json({ message: "Subject not found" });
-    }
-
-    res
-      .status(200)
-      .json({
-        message: "Subject updated successfully",
-        subject: updatedSubject,
-      });
-  } catch (error) {
-    console.error("Error updating subject:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+  if (!updatedSubject) {
+    throw new ApiError(404, "Subject not found");
   }
-};
+
+  res.status(200).json(new ApiResponse(200, updatedSubject, "Subject updated"));
+});
 
 module.exports = { addSubject, deleteSubjects, viewSubjects, updateSubject };
