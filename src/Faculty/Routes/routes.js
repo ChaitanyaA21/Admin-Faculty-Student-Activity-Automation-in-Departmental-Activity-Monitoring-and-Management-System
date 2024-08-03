@@ -30,6 +30,13 @@ const {
   uploadProfilePhoto,
   getProfilePhoto,
 } = require("../../Admin/Controllers/viewProfilePhoto.controller.js");
+const {
+  createLessonPlan,
+  getAllLessonPlans,
+  getLessonPlanById,
+  updateLessonPlan,
+  deleteLessonPlan,
+} = require("../Controllers/lessonPlan.controller.js");
 
 router.route("/attendance").post(updateAttendance);
 router.route("/internalmarks").post(updateInternalMarks);
@@ -37,7 +44,13 @@ router.route("/checkprofile").get(checkProfile);
 router.route("/password").patch(updatePassword);
 router.route("/contact").patch(updateContact);
 router.route("/sendnotes").post(sendNotes);
-router.route("/lessonplan").post(createLessonPlan);
+
+router.route("/lessonplan").post(createLessonPlan).get(getAllLessonPlans);
+router
+  .route("/lessonplan/:id")
+  .get(getLessonPlanById)
+  .put(updateLessonPlan)
+  .delete(deleteLessonPlan);
 
 router.route("/add-activity/:type").post(upload.single("file"), addMyActivity);
 router.route("/view-activity/:type").get(viewActivity);
