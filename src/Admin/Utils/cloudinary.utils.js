@@ -14,11 +14,10 @@ const uploadOnCloudinary = async (localFilePath) => {
       return null;
     }
 
-    console.log("Uploading file to cloudinary");
     const response = await cloudinary.uploader.upload(
       localFilePath,
       {
-        resource_type: "image",
+        resource_type: "auto",
       },
       (error, result) => {
         if (error) {

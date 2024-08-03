@@ -3,15 +3,18 @@ const path = require("path");
 
 // File type validation function
 const fileFilter = (req, file, cb) => {
-  // Allow only PDF files
-  if (
-    file.mimetype === "application/pdf" ||
-    file.mimetype ===
-      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-  ) {
+  const allowedMimeTypes = [
+    "application/pdf",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/msword",
+  ];
+
+  if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("Only PDF and xlsx files  are allowed!"), false);
+    cb(new Error("Only PDF, xlsx, pptx, and Word files are allowed!"), false);
   }
 };
 

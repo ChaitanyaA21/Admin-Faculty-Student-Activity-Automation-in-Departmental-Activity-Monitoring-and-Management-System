@@ -5,7 +5,7 @@ const {
   viewFaculty,
   deleteFaculty,
   updateFaculty,
-} = require("../Controllers/viewFaculty.js");
+} = require("../Controllers/viewFaculty.controller.js");
 
 const { viewSubjects } = require("../Controllers/subject.controller.js");
 
