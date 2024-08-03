@@ -17,7 +17,11 @@ const projectSchema = mongoose.Schema(
     // guide is nothing but faculty id
     guide: {
       type: String,
-      required: [true, "Project guide is not given"],
+      required: [true, "Project guide Id is not given"],
+    },
+    guideName: {
+      type: String,
+      required: [true, "Project guide name is not given"],
     },
   },
   { timestamps: true }

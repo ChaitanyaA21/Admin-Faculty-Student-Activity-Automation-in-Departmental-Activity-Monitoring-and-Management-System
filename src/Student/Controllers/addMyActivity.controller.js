@@ -17,9 +17,16 @@ const addMyActivity = asyncHandler(async (req, res) => {
   // needed for project
   // Number of months internship done
   // Number of months internship done
-  const { title, message, place, date, facultyId, timeperiod, isActive } =
-    req.body.data || req.body;
-
+  const {
+    title,
+    message,
+    place,
+    date,
+    facultyId,
+    guideName,
+    timeperiod,
+    isActive,
+  } = req.body.data || req.body;
   const { type } = req.params;
 
   // Checking if student or faculty
@@ -82,6 +89,7 @@ const addMyActivity = asyncHandler(async (req, res) => {
       data = {
         ...data,
         guide: facultyId,
+        guideName,
       };
       record = await project.create(data);
 
@@ -96,12 +104,14 @@ const addMyActivity = asyncHandler(async (req, res) => {
       timeperiod
     ) {
       data = {
+        ...data,
         rollNo: req.user.rollNo,
         companyName: title,
         Domain: message,
         isActive,
         timeperiod,
       };
+
       record = await internship.create(data);
       result = {
         title: record?.companyName,
@@ -144,9 +154,9 @@ const viewActivity = asyncHandler(async (req, res) => {
   let result;
   if (type === "workshop") result = await workShop.find(query);
   else if (type === "internship") result = await internship.find(query);
-  else if (type === "curricular-activities")
+  else if (type === "curricular-activities") {
     result = await curricularActivities.find(query);
-  else if (type === "project") result = await project.find(query);
+  } else if (type === "project") result = await project.find(query);
 
   if (!result)
     return res.status(200).json(new ApiResponse(200, {}, "No details found"));
