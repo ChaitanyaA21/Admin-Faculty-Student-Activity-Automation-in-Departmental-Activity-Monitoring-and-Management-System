@@ -155,26 +155,29 @@ const viewActivity = asyncHandler(async (req, res) => {
 });
 
 const deleteActivity = asyncHandler(async (req, res) => {
-  let query = {};
+  const { ids } = req.body;
 
   const { type } = req.params;
 
-  if (type === "workshop" && req.user?.rollNo) {
-    query.userId = req.user.rollNo;
-  } else if (type === "workshop" && req.user?.facultyId) {
-    query.userId = req.user.facultyId;
-  } else if (type) {
-    query.rollNo = req.user.rollNo;
-  } else {
-    throw new ApiError(404, "Client Error: Wrong User");
-  }
+  // if (type === "workshop" && req.user?.rollNo) {
+  //   query.userId = req.user.rollNo;
+  // } else if (type === "workshop" && req.user?.facultyId) {
+  //   query.userId = req.user.facultyId;
+  // } else if (type) {
+  //   query.rollNo = req.user.rollNo;
+  // } else {
+  //   throw new ApiError(404, "Client Error: Wrong User");
+  // }
 
   let result;
-  if (type === "workshop") result = await workShop.deleteOne(query);
-  else if (type === "internship") result = await internship.deleteOne(query);
+  if (type === "workshop")
+    result = await workShop.deleteMany({ _id: { $in: ids } });
+  else if (type === "internship")
+    result = await internship.deleteMany({ _id: { $in: ids } });
   else if (type === "curricular-activities")
-    result = await curricularActivities.deleteOne(query);
-  else if (type === "project") result = await project.deleteOne(query);
+    result = await curricularActivities.deleteMany({ _id: { $in: ids } });
+  else if (type === "project")
+    result = await project.deleteMany({ _id: { $in: ids } });
 
   if (!result.deletedCount)
     throw new ApiError(500, "Internal Server Error: No details found");

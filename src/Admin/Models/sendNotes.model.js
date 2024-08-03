@@ -10,6 +10,10 @@ const sendNotesSchema = new mongoose.Schema(
       type: String,
       required: [true, "Subject ID is required"],
     },
+    academicYear: {
+      type: Number,
+      required: [true, "Academic Year is required"],
+    },
     title: {
       type: String,
       required: [true, "Title is required"],
