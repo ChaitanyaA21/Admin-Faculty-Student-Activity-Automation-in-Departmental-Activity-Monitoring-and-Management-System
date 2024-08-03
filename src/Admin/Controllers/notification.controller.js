@@ -27,11 +27,11 @@ const viewNotifications = asyncHandler(async (req, res) => {
 
 const viewSentNotifications = asyncHandler(async (req, res) => {
   let query = {};
-  if (req.user.rollNo) {
+  if (req.user?.rollNo) {
     query.from = req.user.rollNo;
-  } else if (req.user.facultyId) {
+  } else if (req.user?.facultyId) {
     query.from = req.user.facultyId;
-  } else if (type === "admin") {
+  } else {
     query.from = process.env.ADMIN_ID;
   }
 
@@ -45,8 +45,9 @@ const viewSentNotifications = asyncHandler(async (req, res) => {
 });
 
 const createNotification = asyncHandler(async (req, res) => {
-  const { userId, message } = req.body;
-  // if admin wants to create notification then provide "admin" in req.params.admin
+  const { selectedUserId, message } = req.body;
+  const userId = selectedUserId.split(" - ")[0].trim();
+  // if admin wants to create notification then provide "admin" in req.params.type
   const { type } = req.params;
 
   if (!userId || !message) {
@@ -54,6 +55,7 @@ const createNotification = asyncHandler(async (req, res) => {
   }
   // NOTE: if any user wants to create notification either student or faculty has to give "admin" as
   // params value
+
   let data = {};
   if (req.user?.rollNo) {
     data.from = req.user.rollNo;
@@ -98,7 +100,8 @@ const createNotification = asyncHandler(async (req, res) => {
     data = {
       ...data,
       toUserId: userId,
-      firstname: "Administrative Dept",
+      firstname: "Administrative",
+      lastname: "Dept",
       message,
     };
 
@@ -118,7 +121,6 @@ const createNotification = asyncHandler(async (req, res) => {
 const deleteNotification = asyncHandler(async (req, res) => {
   const { ids } = req.body;
 
-  console.log(ids);
   if (!Array.isArray(ids) || ids.length === 0) {
     throw new ApiError(
       404,
@@ -141,7 +143,6 @@ const deleteNotification = asyncHandler(async (req, res) => {
 const readNotification = asyncHandler(async (req, res) => {
   const { ids } = req.body;
 
-  console.log(Array.isArray(ids), ids.length);
   if (!Array.isArray(ids) || ids.length === 0) {
     throw new ApiError(
       404,
@@ -166,6 +167,7 @@ const readNotification = asyncHandler(async (req, res) => {
 
 module.exports = {
   viewNotifications,
+  viewSentNotifications,
   createNotification,
   deleteNotification,
   readNotification,

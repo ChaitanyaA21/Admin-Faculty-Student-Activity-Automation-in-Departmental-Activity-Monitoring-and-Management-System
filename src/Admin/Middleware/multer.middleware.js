@@ -9,6 +9,8 @@ const fileFilter = (req, file, cb) => {
     "application/vnd.openxmlformats-officedocument.presentationml.presentation",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     "application/msword",
+    "image/jpeg",
+    "image/png",
   ];
 
   if (allowedMimeTypes.includes(file.mimetype)) {

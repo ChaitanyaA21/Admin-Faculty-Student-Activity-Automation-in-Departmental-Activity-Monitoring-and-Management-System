@@ -40,6 +40,9 @@ const facultySchema = mongoose.Schema(
     subjects: {
       type: Array,
     },
+    profilePhotoUrl: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

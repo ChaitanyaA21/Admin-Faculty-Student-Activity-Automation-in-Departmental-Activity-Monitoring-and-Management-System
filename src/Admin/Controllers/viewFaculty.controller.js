@@ -43,7 +43,7 @@ const viewFaculty = asyncHandler(async (req, res) => {
     return res
       .status(200)
       .json(
-        new ApiResponse(200, "Faculties retrieved successfully", faculties)
+        new ApiResponse(200, faculties, "Faculties retrieved successfully")
       );
   }
 });
