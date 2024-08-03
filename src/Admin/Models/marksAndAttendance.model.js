@@ -29,9 +29,19 @@ const marksAndAttendanceSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    present: {
-      type: [String],
-    },
+    present: [
+      {
+        date: {
+          type: Date,
+          required: true,
+        },
+        status: {
+          type: String,
+          enum: ["Present", "Absent"],
+          required: true,
+        },
+      },
+    ],
     absent: {
       type: [String],
     },
@@ -39,6 +49,8 @@ const marksAndAttendanceSchema = mongoose.Schema(
   },
   { timestamps: true }
 );
+
+marksAndAttendanceSchema.index({ "attendance.date": 1 }, { unique: true });
 
 const marksAndAttendanceModel = mongoose.model(
   "marksAndAttendance",

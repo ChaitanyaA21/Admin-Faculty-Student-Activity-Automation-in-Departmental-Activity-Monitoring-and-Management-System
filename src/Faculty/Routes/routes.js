@@ -4,7 +4,7 @@ const { upload } = require("../../Admin/Middleware/multer.middleware.js");
 
 //controllers
 
-const { updateAttendance } = require("../Controllers/attendance.controller.js");
+const { addAttendance } = require("../Controllers/attendance.controller.js");
 const { updateInternalMarks } = require("../Controllers/marks.controller.js");
 const { checkProfile } = require("../Controllers/profile.controller.js");
 const {
@@ -20,7 +20,7 @@ const {
   readNotification,
 } = require("../../Admin/Controllers/notification.controller.js");
 
-router.route("/attendance").post(updateAttendance);
+router.route("/attendance").post(addAttendance);
 router.route("/internalmarks").post(updateInternalMarks);
 router.route("/checkprofile").get(checkProfile);
 router.route("/password").patch(updatePassword);
