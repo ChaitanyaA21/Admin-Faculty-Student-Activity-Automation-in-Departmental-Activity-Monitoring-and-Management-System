@@ -82,6 +82,9 @@ const studentSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
+    profilePhotoUrl: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

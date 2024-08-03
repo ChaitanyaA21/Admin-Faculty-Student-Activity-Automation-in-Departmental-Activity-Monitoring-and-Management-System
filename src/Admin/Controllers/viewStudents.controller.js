@@ -16,7 +16,8 @@ const viewStudents = async (req, res) => {
     }
 
     const students = await studentModel.find(query);
-    res.status(200).json(students);
+    // console.log(students);
+    res.status(200).json(new ApiResponse(200, students, "Successful"));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
