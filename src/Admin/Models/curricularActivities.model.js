@@ -21,6 +21,10 @@ const curricularActivitiesSchema = mongoose.Schema(
     certificateUrl: {
       type: String,
     },
+    date: {
+      type: Date,
+      required: [true, "Date not provided"],
+    },
   },
   { timestamps: true }
 );

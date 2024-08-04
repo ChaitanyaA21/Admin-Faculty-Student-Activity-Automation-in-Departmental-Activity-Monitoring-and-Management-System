@@ -37,29 +37,31 @@ const notificationSchema = mongoose.Schema({
   },
 });
 
-notificationSchema.pre("save", async function (next) {
-  try {
-    const notification = mongoose.model("notification");
-    const userId = this.userId;
+// notificationSchema.pre("save", async function (next) {
+//   try {
+//     const notification = mongoose.model("notification");
+//     const userId = this.userId;
 
-    // Count the number of posts created by the user
-    const notificationCount = await notification.countDocuments({ userId });
+//     // Count the number of posts created by the user
+//     const notificationCount = await notification.countDocuments({ userId });
 
-    if (notificationCount >= 10) {
-      // Find and remove the oldest post
-      const oldestNotification = await notification
-        .findOne({ userId })
-        .sort({ createdAt: 1 });
-      if (oldestNotification) {
-        await oldestNotification.remove();
-      }
-    }
+//     if (notificationCount >= 10) {
+//       // Find and remove the oldest post
+//       const oldestNotification = await notification
+//         .findOne({ userId })
+//         .sort({ createdAt: 1 });
+//       console.log(oldestNotification);
 
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
+//       if (oldestNotification) {
+//         await oldestNotification.remove();
+//       }
+//     }
+
+//     next();
+//   } catch (error) {
+//     next(error);
+//   }
+// });
 
 const notification = mongoose.model("notification", notificationSchema);
 module.exports = { notification };

@@ -50,19 +50,18 @@ const forgotPassword = asyncHandler(async (req, res) => {
   const subject = "Password Reset Request for Your Account";
   // http://localhost:5000/api/v2/password/resetpassword?usertype=${userType}&token=${[resetToken]}
 
-  const text = `Dear ${document?.firstname} ${document?.lastname},
+  const text = `<p>Dear <strong>${document?.firstname} ${document?.lastname}</strong>,</p>
 
-We received a request to reset the password for your account associated with this email address. If you made this request, please click on the link below to reset your password:
+    <p>We received a request to reset the password for your account associated with this email address. If you made this request, please click on the link below to reset your password:</p>
 
-http://localhost:5173/resetpassword?usertype=${userType}&token=${[resetToken]}
+    <p><a href="http://localhost:5173/resetpassword?usertype=${userType}&token=${resetToken}">Reset Password</a></p>
 
-This link will expire in 30 minutes for security reasons. If you did not request a password reset, please ignore this email or contact our support team if you have any concerns.
+    <p>This link will expire in 30 minutes for security reasons. If you did not request a password reset, please ignore this email or contact our support team if you have any concerns.</p>
 
-Thank you,
-JNTU Support Team
+    <p>Thank you,<br>
+    JNTU Support Team</p>
 
-Please do not reply to this email. This mailbox is not monitored and you will not receive a response.
-`;
+    <p><em>Please do not reply to this email. This mailbox is not monitored and you will not receive a response.</em></p>`;
   const result = await emailIt(email, subject, text);
 
   let sentEmail;

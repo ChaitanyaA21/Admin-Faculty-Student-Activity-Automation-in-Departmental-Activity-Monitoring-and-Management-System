@@ -16,6 +16,9 @@ const {
   logoutStudent,
   refreshAccessToken,
 } = require("../Controllers/loginStudent.controller.js");
+const {
+  getStudentReport,
+} = require("../Controllers/getStudentReport.controller.js");
 
 router.route("/registration").post(upload.single("file"), registerStudent);
 router.route("/add").post(upload.single("file"), registerStudent);
@@ -30,5 +33,7 @@ router.route("/viewstudents").post(viewStudents);
 router.route("/deletestudents").delete(deleteStudents);
 router.route("/getstudents").post(getStudentDetails);
 router.route("/updatestudent").patch(updateStudent);
+
+router.route("/get-student-report").post(getStudentReport);
 
 module.exports = router;

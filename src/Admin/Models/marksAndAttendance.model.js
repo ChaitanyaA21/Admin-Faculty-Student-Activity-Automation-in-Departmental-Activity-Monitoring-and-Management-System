@@ -29,7 +29,7 @@ const marksAndAttendanceSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    present: [
+    attendance: [
       {
         date: {
           type: Date,
@@ -42,15 +42,24 @@ const marksAndAttendanceSchema = mongoose.Schema(
         },
       },
     ],
-    absent: {
-      type: [String],
-    },
+    // absent: {
+    //   type: [String],
+    // },
     internal: [marksSchema],
   },
   { timestamps: true }
 );
 
-marksAndAttendanceSchema.index({ "attendance.date": 1 }, { unique: true });
+marksAndAttendanceSchema.pre("save", function (next) {
+  const attendanceDates = this.attendance.map((att) => att.date.toISOString());
+  const uniqueDates = new Set(attendanceDates);
+
+  if (attendanceDates.length !== uniqueDates.size) {
+    return next(new Error("Duplicate dates found in attendance."));
+  }
+
+  next();
+});
 
 const marksAndAttendanceModel = mongoose.model(
   "marksAndAttendance",

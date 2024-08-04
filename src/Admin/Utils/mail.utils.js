@@ -18,7 +18,7 @@ const emailIt = async (to, subject, text) => {
     from: process.env.MAIL_USERNAME,
     to: to,
     subject: subject,
-    text: text,
+    html: text,
   };
 
   const info = await transporter.sendMail(senderDetails);
