@@ -53,7 +53,7 @@ const deleteNotes = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Client Error: Correct details are not provided");
   }
 
-  const result = await sendNotes.deleteMany({ _id: { $in: ids } });
+  const result = await SendNotes.deleteMany({ _id: { $in: ids } });
 
   if (!result) {
     throw new ApiError(500, "Internal Server Error: Couldn't delete notes");
@@ -62,4 +62,4 @@ const deleteNotes = asyncHandler(async (req, res) => {
   res.status(200).json(new ApiResponse(200, result, "Successful"));
 });
 
-module.exports = { sendNotes };
+module.exports = { sendNotes, deleteNotes };

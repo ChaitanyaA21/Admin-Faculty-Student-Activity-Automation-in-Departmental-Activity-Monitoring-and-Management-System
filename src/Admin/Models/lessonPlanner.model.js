@@ -2,6 +2,10 @@ const mongoose = require("mongoose");
 
 const lessonPlanSchema = new mongoose.Schema(
   {
+    // facultyId: {
+    //   type: String,
+    //   required: [true, "Faculty Id is required"],
+    // },
     subjectName: {
       type: String,
       required: [true, "Subject name is required"],
@@ -14,8 +18,12 @@ const lessonPlanSchema = new mongoose.Schema(
       type: String,
       required: [true, "Message is required"],
     },
+    academicYear: {
+      type: Number,
+      required: [true, "AcademicYear is required"],
+    },
     date: {
-      type: Date, // Changed from lowercase 'date' to 'Date'
+      type: Date,
       required: [true, "Date is required"],
     },
   },
@@ -24,4 +32,4 @@ const lessonPlanSchema = new mongoose.Schema(
 
 const LessonPlan = mongoose.model("LessonPlan", lessonPlanSchema);
 
-module.exports = LessonPlan;
+module.exports = { LessonPlan };

@@ -11,8 +11,10 @@ const {
   updatePassword,
 } = require("../Controllers/updatePassword.controller.js");
 const { updateContact } = require("../Controllers/updateContact.controller.js");
-const { sendNotes } = require("../Controllers/sendNotes.controller.js");
-const { createLessonPlan } = require("../Controllers/lessonPlan.controller.js");
+const {
+  sendNotes,
+  deleteNotes,
+} = require("../Controllers/sendNotes.controller.js");
 
 const {
   addMyActivity,
@@ -38,23 +40,33 @@ const {
   deleteLessonPlan,
 } = require("../Controllers/lessonPlan.controller.js");
 
+const {
+  viewNotes,
+} = require("../../Student/Controllers/viewNotes.controller.js");
+
 router.route("/attendance").post(addAttendance);
 router.route("/internalmarks").post(updateInternalMarks);
 router.route("/checkprofile").get(checkProfile);
 router.route("/password").patch(updatePassword);
 router.route("/contact").patch(updateContact);
-router.route("/sendnotes").post(sendNotes);
+router.route("/sendnotes").post(upload.single("file"), sendNotes);
 
-router.route("/lessonplan").post(createLessonPlan).get(getAllLessonPlans);
+router.route("/lessonplan").post(createLessonPlan);
 router
   .route("/lessonplan/:id")
   .get(getLessonPlanById)
   .put(updateLessonPlan)
   .delete(deleteLessonPlan);
 
+router.route("/get-lesson-plans").post(getAllLessonPlans);
+router.route("/update-lesson-plans").patch(updateLessonPlan);
+router.route("/delete-lesson-plans").delete(deleteLessonPlan);
+
 router.route("/add-activity/:type").post(upload.single("file"), addMyActivity);
 router.route("/view-activity/:type").get(viewActivity);
 router.route("/delete-activity/:type").delete(deleteActivity);
+router.route("/viewnotes").post(viewNotes);
+router.route("/deletenotes").delete(deleteNotes);
 
 router.route("/sendnotes").post(upload.single("file"), sendNotes);
 router.route("/notifications").get(viewNotifications);

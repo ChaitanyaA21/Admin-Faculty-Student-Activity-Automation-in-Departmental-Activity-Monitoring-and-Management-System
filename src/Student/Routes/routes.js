@@ -35,11 +35,15 @@ const {
 const {
   viewFaculty,
 } = require("../../Admin/Controllers/viewFaculty.controller.js");
+const { viewNotes } = require("../Controllers/viewNotes.controller.js");
 
 const {
   uploadProfilePhoto,
   getProfilePhoto,
 } = require("../../Admin/Controllers/viewProfilePhoto.controller.js");
+const {
+  getAllLessonPlans,
+} = require("../../Faculty/Controllers/lessonPlan.controller.js");
 
 // routes
 
@@ -59,6 +63,8 @@ router.route("/view-activity/:type").get(viewActivity);
 router.route("/delete-activity/:type").delete(deleteActivity);
 
 router.route("/getclassmates").get(getClassmates);
+router.route("/viewnotes").post(viewNotes);
+router.route("/get-lesson-plans").post(getAllLessonPlans);
 
 router.route("/notifications").get(viewNotifications);
 router.route("/create-notifications/:type").post(createNotification);
