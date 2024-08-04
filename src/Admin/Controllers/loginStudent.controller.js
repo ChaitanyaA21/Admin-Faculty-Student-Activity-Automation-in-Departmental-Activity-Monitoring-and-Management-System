@@ -3,7 +3,6 @@ const { ApiError } = require("../Utils/ApiError.utils.js");
 const { ApiResponse } = require("../Utils/ApiResponse.utils.js");
 const { studentLogin } = require("../Models/studentLogin.model.js");
 const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
 
 const generateAccessAndRefreshTokens = async (studentID) => {
   try {
@@ -54,7 +53,7 @@ const loginStudent = asyncHandler(async (req, res) => {
 
   const loggedInStudent = await studentLogin
     .findById(student._id)
-    .select("-password -refreshToken");
+    .select("-password -refreshToken -otp");
 
   const options = {
     httpOnly: true,

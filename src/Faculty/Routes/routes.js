@@ -15,7 +15,6 @@ const {
 } = require("../Controllers/updatePassword.controller.js");
 const { updateContact } = require("../Controllers/updateContact.controller.js");
 const { sendNotes } = require("../Controllers/sendNotes.controller.js");
-const { createLessonPlan } = require("../Controllers/lessonPlan.controller.js");
 
 const {
   addMyActivity,

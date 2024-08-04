@@ -20,6 +20,9 @@ const {
   logoutFaculty,
   refreshAccessToken,
 } = require("../Controllers/facultyLogin.controller.js");
+const {
+  getFacultyReport,
+} = require("../Controllers/getFacultyReport.controller.js");
 
 router.route("/registration").post(registerFaculty);
 router.route("/login").post(loginFaculty);
@@ -33,5 +36,7 @@ router.route("/viewFaculty").get(viewFaculty);
 router.route("/deleteFaculty").delete(deleteFaculty);
 router.route("/updatefaculty").patch(updateFaculty);
 router.route("/viewsubjects").post(viewSubjects);
+
+router.route("/get-faculty-report").post(getFacultyReport);
 
 module.exports = router;
