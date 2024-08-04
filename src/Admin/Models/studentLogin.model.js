@@ -17,6 +17,9 @@ const studentLoginSchema = mongoose.Schema({
   resetToken: {
     type: String,
   },
+  otp: {
+    type: Number,
+  },
 });
 
 studentLoginSchema.pre("save", async function (next) {
@@ -64,6 +67,10 @@ studentLoginSchema.methods.generateResetToken = function () {
       expiresIn: process.env.RESET_TOKEN_EXPIRY,
     }
   );
+};
+
+studentLoginSchema.methods.isOTPCorrect = function (otp) {
+  return this.otp === otp;
 };
 
 const studentLogin = mongoose.model("studentLogin", studentLoginSchema);

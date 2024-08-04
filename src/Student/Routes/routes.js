@@ -10,7 +10,10 @@ const {
 const {
   checkAttendance,
 } = require("../Controllers/checkAttendance.controller.js");
-const { updateContact } = require("../Controllers/updateContact.controller.js");
+const {
+  updateContact,
+  otpGenerate,
+} = require("../Controllers/updateContact.controller.js");
 const {
   checkInternalMarks,
 } = require("../Controllers/checkInternalMarks.controller.js");
@@ -49,7 +52,10 @@ const {
 
 router.route("/password").patch(updatePassword);
 router.route("/attendance").post(checkAttendance);
+
 router.route("/updatecontact").patch(updateContact);
+router.route("/otp-generation").post(otpGenerate);
+
 router.route("/internalmarks").post(checkInternalMarks);
 router.route("/profile").get(checkProfile);
 

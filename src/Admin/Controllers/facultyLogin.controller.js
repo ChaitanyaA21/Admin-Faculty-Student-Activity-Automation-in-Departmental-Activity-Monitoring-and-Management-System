@@ -56,7 +56,7 @@ const loginFaculty = asyncHandler(async (req, res) => {
 
   const loggedInFaculty = await facultyLogin
     .findById(faculty._id)
-    .select("-password -refreshToken");
+    .select("-password -refreshToken -otp");
 
   const options = {
     httpOnly: true,

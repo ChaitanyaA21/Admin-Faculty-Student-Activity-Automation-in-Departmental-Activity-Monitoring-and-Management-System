@@ -22,6 +22,7 @@ router.route("/create-notifications/:type").post(createNotification);
 router.route("/delete-notifications").delete(deleteNotification);
 router.route("/set-read-notifications").patch(readNotification);
 router.route("/sent-notifications").get(viewSentNotifications);
+
 //Secure the routes
 
 router.route("/logout").post(verifyJWTAdmin, logoutAdmin);
