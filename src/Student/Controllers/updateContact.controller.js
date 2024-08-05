@@ -7,7 +7,7 @@ const { emailIt } = require("../../Admin/Utils/mail.utils.js");
 
 const updateContact = asyncHandler(async (req, res) => {
   const { newEmail, otp } = req.body;
-
+  console.log("Entered otp: ", typeof otp);
   if (!newEmail) {
     throw new ApiError(404, "Details Not Provided");
   }
@@ -15,7 +15,7 @@ const updateContact = asyncHandler(async (req, res) => {
   let result2 = null;
 
   const student1 = await studentLogin.findOne({ rollNo: req.user.rollNo });
-  if (student.isOTPCorrect(otp)) {
+  if (student1.isOTPCorrect(Number(otp))) {
     student1.otp = "";
     await student1.save();
 
@@ -93,7 +93,7 @@ const otpGenerate = asyncHandler(async (req, res) => {
     JNTUH Support Team</p>
 `;
 
-  const result3 = await emailIt(newEmail, subject, text);
+  const result3 = await emailIt(req.userDetails?.email, subject, text);
 
   if (!result3) {
     res.status(500).json(500, "Couldn't send email");

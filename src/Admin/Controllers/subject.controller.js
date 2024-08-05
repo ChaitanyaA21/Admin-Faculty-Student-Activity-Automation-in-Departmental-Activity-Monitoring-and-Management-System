@@ -62,10 +62,10 @@ const viewSubjects = asyncHandler(async (req, res) => {
     data.specialization = specialization;
   }
 
-  // Add condition to find subjects with empty facultyId
-  data.facultyId = { $in: [null, ""] };
+  // // Add condition to find subjects with empty facultyId
+  // data.facultyId = { $in: [null, ""] };
 
-  const subjects = await subject.find(data, { _id: 0 });
+  const subjects = await subject.find(data);
 
   if (subjects.length === 0) {
     throw new ApiError(

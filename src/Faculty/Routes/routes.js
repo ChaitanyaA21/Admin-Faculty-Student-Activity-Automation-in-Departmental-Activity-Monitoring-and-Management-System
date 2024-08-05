@@ -13,7 +13,6 @@ const { checkProfile } = require("../Controllers/profile.controller.js");
 const {
   updatePassword,
 } = require("../Controllers/updatePassword.controller.js");
-const { updateContact } = require("../Controllers/updateContact.controller.js");
 const {
   sendNotes,
   deleteNotes,
@@ -24,6 +23,11 @@ const {
   viewActivity,
   deleteActivity,
 } = require("../../Student/Controllers/addMyActivity.controller.js");
+const {
+  updateContact,
+  otpGenerate,
+} = require("../Controllers/updateContact.controller.js");
+
 const {
   createNotification,
   deleteNotification,
@@ -51,6 +55,8 @@ router.route("/attendance").post(addAttendance);
 
 router.route("/internalmarks").post(updateInternalMarks);
 router.route("/get-internal-report").post(getInternalMarksReport);
+router.route("/updatecontact").patch(updateContact);
+router.route("/otp-generation").post(otpGenerate);
 
 router.route("/checkprofile").get(checkProfile);
 router.route("/password").patch(updatePassword);

@@ -6,14 +6,15 @@ const { ApiResponse } = require("../../Admin/Utils/ApiResponse.utils.js");
 const { ApiError } = require("../../Admin/Utils/ApiError.utils.js");
 
 const getInternalMarksReport = asyncHandler(async (req, res) => {
-  const { rollNos } = req.body;
+  const { rollNos, subjectName } = req.body;
 
-  if (!Array.isArray(rollNos) && !rollNos.length) {
+  if (!Array.isArray(rollNos) && !rollNos.length && !subjectName) {
     throw new ApiError(404, "Client Error: Details not given");
   }
 
   const result = await marksAndAttendanceModel.find(
     {
+      subjectName,
       rollNo: { $in: rollNos },
     },
     { internal: 1, rollNo: 1, _id: 0 }

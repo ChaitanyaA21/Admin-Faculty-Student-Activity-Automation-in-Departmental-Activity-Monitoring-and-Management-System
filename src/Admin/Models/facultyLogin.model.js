@@ -19,6 +19,9 @@ const facultyLoginSchema = mongoose.Schema({
   resetToken: {
     type: String,
   },
+  otp: {
+    type: Number,
+  },
 });
 
 facultyLoginSchema.pre("save", async function (next) {
@@ -64,5 +67,9 @@ facultyLoginSchema.methods.generateResetToken = function () {
     }
   );
 };
+facultyLoginSchema.methods.isOTPCorrect = function (otp) {
+  return this.otp === otp;
+};
+
 const facultyLogin = mongoose.model("facultyLogin", facultyLoginSchema);
 module.exports = { facultyLogin };
