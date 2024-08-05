@@ -5,6 +5,10 @@ const { upload } = require("../../Admin/Middleware/multer.middleware.js");
 //controllers
 
 const { addAttendance } = require("../Controllers/attendance.controller.js");
+const {
+  getAttendanceReport,
+} = require("../Controllers/getAttendanceReport.controller.js");
+
 const { updateInternalMarks } = require("../Controllers/marks.controller.js");
 const {
   getInternalMarksReport,
@@ -52,6 +56,7 @@ const {
 } = require("../../Student/Controllers/viewNotes.controller.js");
 
 router.route("/attendance").post(addAttendance);
+router.route("/get-attendance-report").post(getAttendanceReport);
 
 router.route("/internalmarks").post(updateInternalMarks);
 router.route("/get-internal-report").post(getInternalMarksReport);

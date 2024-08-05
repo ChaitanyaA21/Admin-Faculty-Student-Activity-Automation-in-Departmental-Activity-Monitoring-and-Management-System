@@ -124,6 +124,7 @@ const addAttendance = asyncHandler(async (req, res) => {
   const currentDate = normalizeToMidnight(date);
 
   let result = [];
+  let existingPresentRollNos = [];
 
   for (const rollNo of presentRollNos) {
     let doc = await marksAndAttendanceModel.findOne({
@@ -142,24 +143,16 @@ const addAttendance = asyncHandler(async (req, res) => {
 
     const existingDates = doc.attendance.map((att) => att.date.toISOString());
     if (existingDates.includes(currentDate.toISOString())) {
-      res
-        .status(error.status || 400)
-        .json(
-          new ApiResponse(
-            400,
-            {},
-            "Client Error: Attendance for this date already exists."
-          )
-        );
+      existingPresentRollNos.push(rollNo);
+    } else {
+      doc.attendance.push({
+        date: currentDate,
+        status: "Present",
+      });
+
+      const savedDoc = await doc.save();
+      result.push({ rollNo: savedDoc.rollNo, attendance: savedDoc.attendance });
     }
-
-    doc.attendance.push({
-      date: currentDate,
-      status: "Present",
-    });
-
-    const savedDoc = await doc.save();
-    result.push(savedDoc);
   }
 
   for (const rollNo of absentRollNos) {
@@ -191,10 +184,19 @@ const addAttendance = asyncHandler(async (req, res) => {
     });
 
     const savedDoc = await doc.save();
-    result.push(savedDoc);
+    result.push({ rollNo: savedDoc.rollNo, attendance: savedDoc.attendance });
   }
 
-  res.status(200).json(new ApiResponse(200, result, "successful"));
+  res.status(200).json(
+    new ApiResponse(
+      200,
+      {
+        savedDocs: result,
+        existingPresentRollNos: existingPresentRollNos,
+      },
+      "successful"
+    )
+  );
 });
 
 module.exports = { addAttendance };
